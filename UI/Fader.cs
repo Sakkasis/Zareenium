@@ -105,7 +105,7 @@ public class Fader : MonoBehaviour
         }
 
     }
-
+#nullable disable
     public void SetFadeCanvasActive(bool trueOnFalseOff)
     {
 
