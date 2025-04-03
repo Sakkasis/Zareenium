@@ -3,6 +3,6 @@ using System;
 public interface IConfigService
 {
 
-    public string ConfigDataFormatted();
+    public string FormatData(string input);
 
 }

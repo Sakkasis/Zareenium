@@ -1,39 +1,33 @@
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class ConfigManager : MonoBehaviour
 {
 
     [Header("Conifg")]
     public bool menuOpen = false;
+    [SerializeField] GameObject configMenuButton;
     [SerializeField] GameObject configCanvas;
     [SerializeField] GameObject settingsCanvas;
-    [SerializeField] GameObject playerCanvas;
-    [SerializeField] GameObject enemyCanvas;
+    [SerializeField] GameObject dataTextInputObj;
+    [SerializeField] GameObject dataTextOutputObj;
+
+    TextMeshProUGUI dataTextInput;
+    TextMeshProUGUI dataTextOutput;
 
     ConfigLogic logicScript = new ConfigLogic();
+    IConfigService ConfigService = new ConfigService();
 
     private void Awake()
     {
 
         logicScript.InitializeConfigDataFile();
-
-    }
-
-    private void Start()
-    {
-
-
-
-    }
-
-    private void Update()
-    {
-        
-
+        dataTextInput = dataTextInputObj.GetComponent<TextMeshProUGUI>();
+        dataTextOutput = dataTextOutputObj.GetComponent<TextMeshProUGUI>();
+        configMenuButton.SetActive(logicScript.ConfigEnabled());
 
     }
 
@@ -42,23 +36,10 @@ public class ConfigManager : MonoBehaviour
 
         menuOpen = !menuOpen;
         MenuManager menuScript = gameObject.GetComponent<MenuManager>();
-
-        if (menuOpen)
-        {
-
-            configCanvas.SetActive(true);
-            settingsCanvas.SetActive(false);
-            menuScript.settingsOpenBool = false;
-
-        }
-        else
-        {
-
-            configCanvas.SetActive(false);
-            settingsCanvas.SetActive(true);
-            menuScript.settingsOpenBool = true;
-
-        }
+        configCanvas.SetActive(menuOpen);
+        settingsCanvas.SetActive(!menuOpen);
+        menuScript.settingsOpenBool = !menuOpen;
+        dataTextOutput.SetText(ConfigService.FormatData("All"));
 
     }
 
@@ -73,13 +54,18 @@ public class ConfigLogic
     IDataService DataService = new JsonDataService();
     IDataClasses DataClasses = new DataClasses();
 
+    public bool ConfigEnabled()
+    {
+        return Config;
+    }
+
     public void InitializeConfigDataFile()
     {
 
         ConfigData data = new ConfigData();
         data.ConfigManager = Config;
-
         SaveManagerData managerData = DataClasses.SaveManagerDataClass();
+
         if (DataService.DoesFileExist("PlayerData" + DataClasses.SlotFileName(managerData.currentlySelectedSaveSlot - 1)))
         {
 
@@ -350,10 +336,168 @@ public class ConfigLogic
                 }
 
             }
+            else
+            {
+
+                data.eHealth.Clear();
+                data.eMaxHealth.Clear();
+                data.eMana.Clear();
+                data.eMaxMana.Clear();
+                data.eDoesAIUseMagic.Clear();
+                data.eDoesAIPatrol.Clear();
+                data.ePatrolWait.Clear();
+                data.ePatrolRouteInt.Clear();
+                data.ePatrolPointInt.Clear();
+
+                data.enemyPositionX.Clear();
+                data.enemyPositionY.Clear();
+                data.enemyPositionZ.Clear();
+
+                data.enemyRotationX.Clear();
+                data.enemyRotationY.Clear();
+                data.enemyRotationZ.Clear();
+
+                data.eHealth.Add(100f);
+                data.eMaxHealth.Add(100f);
+                data.eMana.Add(100f);
+                data.eMaxMana.Add(100f);
+                data.eDoesAIUseMagic.Add(false);
+                data.eDoesAIPatrol.Add(true);
+                data.ePatrolWait.Add(8f);
+                data.ePatrolRouteInt.Add(1);
+                data.ePatrolPointInt.Add(0);
+
+                data.enemyPositionX.Add(-6.46f);
+                data.enemyPositionY.Add(1.55f);
+                data.enemyPositionZ.Add(-4.35f);
+
+                data.enemyRotationX.Add(0f);
+                data.enemyRotationY.Add(0f);
+                data.enemyRotationZ.Add(0f);
+
+            }
 
         }
 
         DataService.SaveData(fileName, data, true);
+
+    }
+
+    public ConfigData LoadConfigData()
+    {
+
+        ConfigData data = new ConfigData();
+        SaveManagerData managerData = DataClasses.SaveManagerDataClass();
+        
+        if (File.Exists("PlayerData" + DataClasses.SlotFileName(managerData.currentlySelectedSaveSlot - 1)) && File.Exists("EnemyData" + DataClasses.SlotFileName(managerData.currentlySelectedSaveSlot - 1)))
+        {
+
+            PlayerData pData = DataService.LoadData<PlayerData>("PlayerData" + DataClasses.SlotFileName(managerData.currentlySelectedSaveSlot - 1), false);
+            EnemyData eData = DataService.LoadData<EnemyData>("EnemyData" + DataClasses.SlotFileName(managerData.currentlySelectedSaveSlot - 1), false);
+            int numOfEnemies = eData.health.Count;
+
+            data.pWalkSpeed = pData.walkSpeed;
+            data.pRunSpeed = pData.runSpeed;
+            data.pJumpHeight = pData.jumpHeight;
+            data.pGravity = pData.gravity;
+            data.pHealth = pData.health;
+            data.pMana = pData.mana;
+            data.pMaxHealth = pData.maxHealth;
+            data.pMaxMana = pData.maxMana;
+            data.pHpRegenAmount = pData.hpRegenAmount;
+            data.pManaRegenAmount = pData.manaRegenAmount;
+            data.pHpRegenCooldown = pData.hpRegenCooldown;
+            data.pManaRegenCooldown = pData.manaRegenCooldown;
+            data.pDamageAmount = pData.damageAmount;
+            data.pCritRate = pData.critRate;
+            data.pCritDamage = pData.critDamage;
+            data.pAttackCooldown = pData.attackCooldown;
+            data.pAttackManaCost = pData.attackManaCost;
+
+            data.playerPositionX = pData.playerPositionX;
+            data.playerPositionY = pData.playerPositionY;
+            data.playerPositionZ = pData.playerPositionZ;
+
+            data.playerRotationX = pData.playerRotationX;
+            data.playerRotationY = pData.playerRotationY;
+            data.playerRotationZ = pData.playerRotationZ;
+
+            data.camPositionX = pData.camPositionX;
+            data.camPositionY = pData.camPositionY;
+            data.camPositionZ = pData.camPositionZ;
+
+            data.camRotationX = pData.camRotationX;
+            data.camRotationY = pData.camRotationY;
+            data.camRotationZ = pData.camRotationZ;
+
+            data.eHealth.Clear();
+            data.eMaxHealth.Clear();
+            data.eMana.Clear();
+            data.eMaxMana.Clear();
+            data.eDoesAIUseMagic.Clear();
+            data.eDoesAIPatrol.Clear();
+            data.ePatrolWait.Clear();
+            data.ePatrolRouteInt.Clear();
+            data.ePatrolPointInt.Clear();
+
+            data.enemyPositionX.Clear();
+            data.enemyPositionY.Clear();
+            data.enemyPositionZ.Clear();
+
+            data.enemyRotationX.Clear();
+            data.enemyRotationY.Clear();
+            data.enemyRotationZ.Clear();
+
+            data.eHealth.AddRange(new float[numOfEnemies]);
+            data.eMaxHealth.AddRange(new float[numOfEnemies]);
+            data.eMana.AddRange(new float[numOfEnemies]);
+            data.eMaxMana.AddRange(new float[numOfEnemies]);
+            data.eDoesAIUseMagic.AddRange(new bool[numOfEnemies]);
+            data.eDoesAIPatrol.AddRange(new bool[numOfEnemies]);
+            data.ePatrolWait.AddRange(new float[numOfEnemies]);
+            data.ePatrolRouteInt.AddRange(new int[numOfEnemies]);
+            data.ePatrolPointInt.AddRange(new int[numOfEnemies]);
+
+            data.enemyPositionX.AddRange(new float[numOfEnemies]);
+            data.enemyPositionY.AddRange(new float[numOfEnemies]);
+            data.enemyPositionZ.AddRange(new float[numOfEnemies]);
+
+            data.enemyRotationX.AddRange(new float[numOfEnemies]);
+            data.enemyRotationY.AddRange(new float[numOfEnemies]);
+            data.enemyRotationZ.AddRange(new float[numOfEnemies]);
+
+            for (int i = 0; i < numOfEnemies; i++)
+            {
+
+                data.eHealth[i] = eData.health[i];
+                data.eMaxHealth[i] = eData.maxHealth[i];
+                data.eMana[i] = eData.mana[i];
+                data.eMaxMana[i] = eData.maxMana[i];
+                data.eDoesAIUseMagic[i] = eData.doesAIUseMagic[i];
+                data.eDoesAIPatrol[i] = eData.doesAIPatrol[i];
+                data.ePatrolWait[i] = eData.patrolWait[i];
+                data.ePatrolRouteInt[i] = eData.patrolRouteInt[i];
+                data.ePatrolPointInt[i] = eData.patrolRouteInt[i];
+
+                data.enemyPositionX[i] = eData.enemyPositionX[i];
+                data.enemyPositionY[i] = eData.enemyPositionY[i];
+                data.enemyPositionZ[i] = eData.enemyPositionZ[i];
+
+                data.enemyRotationX[i] = eData.enemyRotationX[i];
+                data.enemyRotationY[i] = eData.enemyRotationY[i];
+                data.enemyRotationZ[i] = eData.enemyRotationZ[i];
+
+            }
+
+        }
+        else
+        {
+
+            data = DataService.LoadData<ConfigData>(fileName, true);
+
+        }
+
+        return data;
 
     }
 
