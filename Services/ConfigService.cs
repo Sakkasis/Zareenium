@@ -12,81 +12,66 @@ public class ConfigService : IConfigService
     ConfigLogic configLogic = new ConfigLogic();
     FormatConfigData formatData = new FormatConfigData();
 
-    public string FormatData(string input)
+    public List<string> FormatData(string input)
     {
 
         ConfigData data = configLogic.LoadConfigData();
-        string formattedDataString;
+        List<string> formattedDataStrings = new List<string>();
 
         if (input.Equals("All", StringComparison.Ordinal))
         {
 
-            formattedDataString = FormatAllData(data);
+            formattedDataStrings = FormatAllData(data);
 
         }
         else
         {
 
-            formattedDataString = "!ERROR! Unrecognized command, please try again.";
+            formattedDataStrings.Clear();
+            formattedDataStrings.Add("!ERROR! Unrecognized command, please try again.");
 
         }
 
-        return formattedDataString;
+        return formattedDataStrings;
 
     }
 
-    string FormatAllData(ConfigData data)
+    List<string> FormatAllData(ConfigData data)
     {
 
-        string dataString;
+        List<string> promptStrings = new List<string>();
 
-        string pPhysics = FormatArray(formatData.PlayerPhysics(data));
-        string pHpManaStats = FormatArray(formatData.PlayerHpManaStats(data));
-        string pAttack = FormatArray(formatData.PlayerAttack(data));
-        string pPosition = FormatArray(formatData.PlayerPosition(data));
-        string pRotation = FormatArray(formatData.PlayerRotation(data));
-        string cPosition = FormatArray(formatData.CameraPosition(data));
-        string cRotation = FormatArray(formatData.CameraRotation(data));
-
-        List<string> eStats = new List<string>();
-        List<string> eLogic = new List<string>();
-        List<string> ePosition = new List<string>();
-        List<string> eRotation = new List<string>();
+        promptStrings.Clear();
+        promptStrings.Add("Loaded Config Data:");
+        promptStrings.Add("    Player:");
+        promptStrings.Add("        Physics:");
+        promptStrings.AddRange(formatData.PlayerPhysicsFormat(data, 3));
+        promptStrings.Add("        HP and Mana:");
+        promptStrings.AddRange(formatData.PlayerHpManaStatsFormat(data, 3));
+        promptStrings.Add("        Attack:");
+        promptStrings.AddRange(formatData.PlayerAttackFormat(data, 3));
+        promptStrings.Add("        Locaiton:");
+        promptStrings.Add("            Position:");
+        promptStrings.AddRange(formatData.PlayerPositionFormat(data, 4));
+        promptStrings.Add("            Rotation:");
+        promptStrings.AddRange(formatData.PlayerRotationFormat(data, 4));
+        promptStrings.Add("    Enemies:");
 
         for (int i = 0; i < data.eHealth.Count; i++)
         {
-
-            eStats.Add(FormatArray(formatData.EnemyStats(data, i)));
-            eLogic.Add(FormatArray(formatData.EnemyLogic(data, i)));
-            ePosition.Add(FormatArray(formatData.EnemyPosition(data, i)));
-            eRotation.Add(FormatArray(formatData.EnemyRotation(data, i)));
-
+            promptStrings.Add("        Enemy" + i + ":");
+            promptStrings.Add("            Stats:");
+            promptStrings.AddRange(formatData.EnemyStatsFormat(data, 4, i));
+            promptStrings.Add("            Logic:");
+            promptStrings.AddRange(formatData.EnemyLogicFormat(data, 4, i));
+            promptStrings.Add("            Location:");
+            promptStrings.Add("                Position:");
+            promptStrings.AddRange(formatData.EnemyLogicFormat(data, 5, i));
+            promptStrings.Add("                Rotation:");
+            promptStrings.AddRange(formatData.EnemyLogicFormat(data, 5, i));
         }
 
-        dataString = "Loaded Config Data\n" +
-            "   Player:\n" +
-            "       Physics:\n" +
-            "           ";
-
-
-
-        return dataString;
-
-    }
-
-    string FormatArray(CustomEnumArray[] customArray)
-    {
-
-        string dataString = "";
-
-        foreach (CustomEnumArray array in customArray)
-        {
-
-            dataString = dataString + array.variableName + ": " + array.variable + "\n";
-
-        }
-
-        return dataString;
+        return promptStrings;
 
     }
 
@@ -95,7 +80,227 @@ public class ConfigService : IConfigService
 public class FormatConfigData
 {
 
-    public CustomEnumArray[] PlayerPhysics(ConfigData data)
+    public List<string> PlayerPhysicsFormat(ConfigData data, int indents)
+    {
+
+        List<string> promptStrings = new List<string>();
+
+        foreach (CustomEnumArray ceu in PlayerPhysics(data))
+        {
+            string prompt = "";
+            for (int i = 0; i < indents; i++)
+            {
+                prompt += "    ";
+            }
+            prompt += ceu.variableName + ": " + ceu.variable;
+            promptStrings.Add(prompt);
+        }
+
+        return promptStrings;
+
+    }
+
+    public List<string> PlayerHpManaStatsFormat(ConfigData data, int indents)
+    {
+
+        List<string> promptStrings = new List<string>();
+
+        foreach (CustomEnumArray ceu in PlayerHpManaStats(data))
+        {
+            string prompt = "";
+            for (int i = 0; i < indents; i++)
+            {
+                prompt += "    ";
+            }
+            prompt += ceu.variableName + ": " + ceu.variable;
+            promptStrings.Add(prompt);
+        }
+
+        return promptStrings;
+
+    }
+
+    public List<string> PlayerAttackFormat(ConfigData data, int indents)
+    {
+
+        List<string> promptStrings = new List<string>();
+
+        foreach (CustomEnumArray ceu in PlayerAttack(data))
+        {
+            string prompt = "";
+            for (int i = 0; i < indents; i++)
+            {
+                prompt += "    ";
+            }
+            prompt += ceu.variableName + ": " + ceu.variable;
+            promptStrings.Add(prompt);
+        }
+
+        return promptStrings;
+
+    }
+
+    public List<string> PlayerPositionFormat(ConfigData data, int indents)
+    {
+
+        List<string> promptStrings = new List<string>();
+
+        foreach (CustomEnumArray ceu in PlayerPosition(data))
+        {
+            string prompt = "";
+            for (int i = 0; i < indents; i++)
+            {
+                prompt += "    ";
+            }
+            prompt += ceu.variableName + ": " + ceu.variable;
+            promptStrings.Add(prompt);
+        }
+
+        return promptStrings;
+
+    }
+
+    public List<string> PlayerRotationFormat(ConfigData data, int indents)
+    {
+
+        List<string> promptStrings = new List<string>();
+
+        foreach (CustomEnumArray ceu in PlayerRotation(data))
+        {
+            string prompt = "";
+            for (int i = 0; i < indents; i++)
+            {
+                prompt += "    ";
+            }
+            prompt += ceu.variableName + ": " + ceu.variable;
+            promptStrings.Add(prompt);
+        }
+
+        return promptStrings;
+
+    }
+
+    public List<string> CameraPositionFormat(ConfigData data, int indents)
+    {
+
+        List<string> promptStrings = new List<string>();
+
+        foreach (CustomEnumArray ceu in CameraPosition(data))
+        {
+            string prompt = "";
+            for (int i = 0; i < indents; i++)
+            {
+                prompt += "    ";
+            }
+            prompt += ceu.variableName + ": " + ceu.variable;
+            promptStrings.Add(prompt);
+        }
+
+        return promptStrings;
+
+    }
+
+    public List<string> CameraRotationFormat(ConfigData data, int indents)
+    {
+
+        List<string> promptStrings = new List<string>();
+
+        foreach (CustomEnumArray ceu in CameraRotation(data))
+        {
+            string prompt = "";
+            for (int i = 0; i < indents; i++)
+            {
+                prompt += "    ";
+            }
+            prompt += ceu.variableName + ": " + ceu.variable;
+            promptStrings.Add(prompt);
+        }
+
+        return promptStrings;
+
+    }
+
+    public List<string> EnemyStatsFormat(ConfigData data, int indents, int index)
+    {
+
+        List<string> promptStrings = new List<string>();
+
+        foreach (CustomEnumArray ceu in EnemyStats(data, index))
+        {
+            string prompt = "";
+            for (int i = 0; i < indents; i++)
+            {
+                prompt += "    ";
+            }
+            prompt += ceu.variableName + ": " + ceu.variable;
+            promptStrings.Add(prompt);
+        }
+
+        return promptStrings;
+
+    }
+
+    public List<string> EnemyLogicFormat(ConfigData data, int indents, int index)
+    {
+
+        List<string> promptStrings = new List<string>();
+
+        foreach (CustomEnumArray ceu in EnemyLogic(data, index))
+        {
+            string prompt = "";
+            for (int i = 0; i < indents; i++)
+            {
+                prompt += "    ";
+            }
+            prompt += ceu.variableName + ": " + ceu.variable;
+            promptStrings.Add(prompt);
+        }
+
+        return promptStrings;
+
+    }
+
+    public List<string> EnemyPositionFormat(ConfigData data, int indents, int index)
+    {
+
+        List<string> promptStrings = new List<string>();
+
+        foreach (CustomEnumArray ceu in EnemyPosition(data, index))
+        {
+            string prompt = "";
+            for (int i = 0; i < indents; i++)
+            {
+                prompt += "    ";
+            }
+            prompt += ceu.variableName + ": " + ceu.variable;
+            promptStrings.Add(prompt);
+        }
+
+        return promptStrings;
+
+    }
+
+    public List<string> EnemyRotationFormat(ConfigData data, int indents, int index)
+    {
+
+        List<string> promptStrings = new List<string>();
+
+        foreach (CustomEnumArray ceu in EnemyRotation(data, index))
+        {
+            string prompt = "";
+            for (int i = 0; i < indents; i++)
+            {
+                prompt += "    ";
+            }
+            prompt += ceu.variableName + ": " + ceu.variable;
+            promptStrings.Add(prompt);
+        }
+
+        return promptStrings;
+
+    }
+
+    CustomEnumArray[] PlayerPhysics(ConfigData data)
     {
 
         CustomEnumArray[] pPhysics = new CustomEnumArray[4]
@@ -110,7 +315,7 @@ public class FormatConfigData
 
     }
 
-    public CustomEnumArray[] PlayerHpManaStats(ConfigData data)
+    CustomEnumArray[] PlayerHpManaStats(ConfigData data)
     {
 
         CustomEnumArray[] pHpManaStats = new CustomEnumArray[8]
@@ -129,7 +334,7 @@ public class FormatConfigData
 
     }
 
-    public CustomEnumArray[] PlayerAttack(ConfigData data)
+    CustomEnumArray[] PlayerAttack(ConfigData data)
     {
 
         CustomEnumArray[] pAttack = new CustomEnumArray[5]
@@ -145,7 +350,7 @@ public class FormatConfigData
 
     }
 
-    public CustomEnumArray[] PlayerPosition(ConfigData data)
+    CustomEnumArray[] PlayerPosition(ConfigData data)
     {
 
         CustomEnumArray[] pPosition = new CustomEnumArray[3]
@@ -159,7 +364,7 @@ public class FormatConfigData
 
     }
 
-    public CustomEnumArray[] PlayerRotation(ConfigData data)
+    CustomEnumArray[] PlayerRotation(ConfigData data)
     {
 
         CustomEnumArray[] pRotation = new CustomEnumArray[3]
@@ -173,7 +378,7 @@ public class FormatConfigData
 
     }
 
-    public CustomEnumArray[] CameraPosition(ConfigData data)
+    CustomEnumArray[] CameraPosition(ConfigData data)
     {
 
         CustomEnumArray[] cPosition = new CustomEnumArray[3]
@@ -187,7 +392,7 @@ public class FormatConfigData
 
     }
 
-    public CustomEnumArray[] CameraRotation(ConfigData data)
+    CustomEnumArray[] CameraRotation(ConfigData data)
     {
 
         CustomEnumArray[] cRotation = new CustomEnumArray[3]
@@ -201,7 +406,7 @@ public class FormatConfigData
 
     }
 
-    public CustomEnumArray[] EnemyStats(ConfigData data, int i)
+    CustomEnumArray[] EnemyStats(ConfigData data, int i)
     {
 
         CustomEnumArray[] eStats = new CustomEnumArray[4]
@@ -216,7 +421,7 @@ public class FormatConfigData
 
     }
 
-    public CustomEnumArray[] EnemyLogic(ConfigData data, int i)
+    CustomEnumArray[] EnemyLogic(ConfigData data, int i)
     {
 
         CustomEnumArray[] eLogic = new CustomEnumArray[5]
@@ -232,7 +437,7 @@ public class FormatConfigData
 
     }
 
-    public CustomEnumArray[] EnemyPosition(ConfigData data, int i)
+    CustomEnumArray[] EnemyPosition(ConfigData data, int i)
     {
 
         CustomEnumArray[] ePosition = new CustomEnumArray[3]
@@ -246,7 +451,7 @@ public class FormatConfigData
 
     }
 
-    public CustomEnumArray[] EnemyRotation(ConfigData data, int i)
+    CustomEnumArray[] EnemyRotation(ConfigData data, int i)
     {
 
         CustomEnumArray[] eRotation = new CustomEnumArray[3]

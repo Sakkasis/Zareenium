@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class ConfigManager : MonoBehaviour
@@ -12,11 +13,12 @@ public class ConfigManager : MonoBehaviour
     [SerializeField] GameObject configMenuButton;
     [SerializeField] GameObject configCanvas;
     [SerializeField] GameObject settingsCanvas;
-    [SerializeField] GameObject dataTextInputObj;
-    [SerializeField] GameObject dataTextOutputObj;
+    [SerializeField] GameObject textInputObj;
+    [SerializeField] GameObject promptFieldObj;
+    [SerializeField] GameObject textPromptPrefab;
 
     TextMeshProUGUI dataTextInput;
-    TextMeshProUGUI dataTextOutput;
+    List<GameObject> dataPromptsList = new List<GameObject>();
 
     ConfigLogic logicScript = new ConfigLogic();
     IConfigService ConfigService = new ConfigService();
@@ -25,8 +27,7 @@ public class ConfigManager : MonoBehaviour
     {
 
         logicScript.InitializeConfigDataFile();
-        dataTextInput = dataTextInputObj.GetComponent<TextMeshProUGUI>();
-        dataTextOutput = dataTextOutputObj.GetComponent<TextMeshProUGUI>();
+        dataTextInput = textInputObj.GetComponent<TextMeshProUGUI>();
         configMenuButton.SetActive(logicScript.ConfigEnabled());
 
     }
@@ -39,7 +40,35 @@ public class ConfigManager : MonoBehaviour
         configCanvas.SetActive(menuOpen);
         settingsCanvas.SetActive(!menuOpen);
         menuScript.settingsOpenBool = !menuOpen;
-        dataTextOutput.SetText(ConfigService.FormatData("All"));
+        SetDataPrompts("All");
+
+    }
+
+    public void SetDataPrompts(string input)
+    {
+
+        List<string> prompts = ConfigService.FormatData(input);
+
+        if (dataPromptsList.Count == 0)
+        {
+            int count = dataPromptsList.Count;
+            for (int i = 0; i < count; i++)
+            {
+                Destroy(dataPromptsList[0]);
+            }
+        }
+
+        for (int i = 0; i < prompts.Count; i++)
+        {
+
+            GameObject textPrompt = GameObject.Instantiate(textPromptPrefab);
+            textPrompt.transform.SetParent(promptFieldObj.transform);
+            TextMeshProUGUI textField = textPrompt.GetComponent<TextMeshProUGUI>();
+            textField.SetText(prompts[i]);
+            textField.name = "textPrompt" + i;
+            dataPromptsList.Add(textPrompt);
+
+        }
 
     }
 
