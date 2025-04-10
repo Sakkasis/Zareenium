@@ -13,11 +13,13 @@ public class ConfigManager : MonoBehaviour
     [SerializeField] GameObject configMenuButton;
     [SerializeField] GameObject configCanvas;
     [SerializeField] GameObject settingsCanvas;
-    [SerializeField] GameObject textInputObj;
+    [SerializeField] GameObject dataTypeInputObj;
+    [SerializeField] GameObject dataCommandInputObj;
     [SerializeField] GameObject promptFieldObj;
     [SerializeField] GameObject textPromptPrefab;
 
-    TextMeshProUGUI dataTextInput;
+    TextMeshProUGUI dataTypeInput;
+    TextMeshProUGUI dataCommandInput;
     List<GameObject> dataPromptsList = new List<GameObject>();
 
     ConfigLogic logicScript = new ConfigLogic();
@@ -27,7 +29,8 @@ public class ConfigManager : MonoBehaviour
     {
 
         logicScript.InitializeConfigDataFile();
-        dataTextInput = textInputObj.GetComponent<TextMeshProUGUI>();
+        dataTypeInput = dataTypeInputObj.GetComponent<TextMeshProUGUI>();
+        dataCommandInput = dataCommandInputObj.GetComponent<TextMeshProUGUI>();
         configMenuButton.SetActive(logicScript.ConfigEnabled());
 
     }
@@ -40,21 +43,49 @@ public class ConfigManager : MonoBehaviour
         configCanvas.SetActive(menuOpen);
         settingsCanvas.SetActive(!menuOpen);
         menuScript.settingsOpenBool = !menuOpen;
-        SetDataPrompts("All");
+        SetDataPrompts();
 
     }
 
-    public void SetDataPrompts(string input)
+    public void SetDataPrompts()
     {
 
-        List<string> prompts = ConfigService.FormatData(input);
+        List<string> prompts = ConfigService.FormatAllData();
 
-        if (dataPromptsList.Count == 0)
+        if (dataPromptsList.Count != 0)
         {
-            int count = dataPromptsList.Count;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < dataPromptsList.Count; i++)
             {
-                Destroy(dataPromptsList[0]);
+                Destroy(dataPromptsList[i]);
+            }
+        }
+
+        for (int i = 0; i < prompts.Count; i++)
+        {
+
+            GameObject textPrompt = GameObject.Instantiate(textPromptPrefab);
+            textPrompt.transform.SetParent(promptFieldObj.transform);
+            TextMeshProUGUI textField = textPrompt.GetComponent<TextMeshProUGUI>();
+            textField.SetText(prompts[i]);
+            textField.name = "textPrompt" + i;
+            dataPromptsList.Add(textPrompt);
+
+        }
+
+    }
+
+    public void ExecuteCommand()
+    {
+
+        string dataType = dataTypeInput.text;
+        string dataCommand = dataCommandInput.text;
+        List<string> prompts = ConfigService.SetDataByCommand(dataCommand, dataType);
+
+        if (dataPromptsList.Count != 0)
+        {
+            for (int i = 0; i < dataPromptsList.Count; i++)
+            {
+                Destroy(dataPromptsList[i]);
             }
         }
 
@@ -527,6 +558,24 @@ public class ConfigLogic
         }
 
         return data;
+
+    }
+
+    public bool SaveConfigData(ConfigData data)
+    {
+
+        if (DataService.SaveData(fileName, data, true))
+        {
+
+            return true;
+
+        }
+        else
+        {
+
+            return false;
+
+        }
 
     }
 
