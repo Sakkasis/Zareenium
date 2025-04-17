@@ -1,31 +1,31 @@
 using System;
 using System.Collections;
 
-public class CustomEnumArray
+public class PlayerEnumArray
 {
 
-    public string variableName;
+    public int varIndex;
     public object variable;
 
-    public CustomEnumArray(string variableName, object variable)
+    public PlayerEnumArray(int varIndex, object variable)
     {
 
-        this.variableName = variableName;
+        this.varIndex = varIndex;
         this.variable = variable;
 
     }
 
 }
 
-public class CustomEnumerable : IEnumerable
+public class PlayerEnumerable : IEnumerable
 {
 
-    private CustomEnumArray[] variables;
+    private PlayerEnumArray[] variables;
 
-    public CustomEnumerable(CustomEnumArray[] pArray)
+    public PlayerEnumerable(PlayerEnumArray[] pArray)
     {
 
-        variables = new CustomEnumArray[pArray.Length];
+        variables = new PlayerEnumArray[pArray.Length];
 
         for (int i = 0; i < pArray.Length; i++)
         {
@@ -43,22 +43,22 @@ public class CustomEnumerable : IEnumerable
 
     }
 
-    public CustomEnumerator GetEnumerator()
+    public PlayerEnumerator GetEnumerator()
     {
 
-        return new CustomEnumerator(variables);
+        return new PlayerEnumerator(variables);
 
     }
 
 }
 
-public class CustomEnumerator : IEnumerator
+public class PlayerEnumerator : IEnumerator
 {
 
-    public CustomEnumArray[] variables;
+    public PlayerEnumArray[] variables;
     public int position = -1;
 
-    public CustomEnumerator(CustomEnumArray[] list)
+    public PlayerEnumerator(PlayerEnumArray[] list)
     {
 
         variables = list;
@@ -92,7 +92,7 @@ public class CustomEnumerator : IEnumerator
 
     }
 
-    public CustomEnumArray Current
+    public PlayerEnumArray Current
     {
 
         get

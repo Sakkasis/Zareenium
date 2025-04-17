@@ -394,6 +394,13 @@ public class PlayerManager : MonoBehaviour
 
     }
 
+    public void SetConfigParameters(PlayerEnumArray[] pArray, int index)
+    {
+
+
+
+    }
+
 }
 
 [Serializable]

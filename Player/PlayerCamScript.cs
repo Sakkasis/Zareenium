@@ -1,8 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using TMPro;
 
 public class PlayerCamScript : MonoBehaviour
 {
@@ -63,6 +60,15 @@ public class PlayerCamScript : MonoBehaviour
 
         currentRotation = logicScript.CamRotation(currentRotation, xMouseSensitivity, yMouseSensitivity);
         gameObject.transform.rotation = Quaternion.Euler(currentRotation.y, currentRotation.x, 0).normalized;
+
+    }
+
+    public void SetConfigParameters(float x, float y, Vector3 position, Quaternion rotation)
+    {
+
+        xMouseSensitivity = x;
+        yMouseSensitivity = y;
+        gameObject.transform.SetPositionAndRotation(position, rotation);
 
     }
 

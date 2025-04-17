@@ -1,14 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using UnityEngine;
-using Newtonsoft.Json;
+using UnityEngine.SceneManagement;
 
 public class ConfigService : IConfigService
 {
 
+    IDataClasses DataClasses = new DataClasses();
     ConfigLogic configLogic = new ConfigLogic();
     FormatConfigData formatData = new FormatConfigData();
 
@@ -58,20 +57,14 @@ public class ConfigService : IConfigService
 
     }
 
-    public List<string> SetDataByCommand(string command, string input)
+    public List<string> SetDataByCommand(string command, string input, PlayerManager pScript, PlayerCamScript cScript, List<NormEnemyBehavior> aiScript)
     {
 
         ConfigData data = configLogic.LoadConfigData();
-        string dataInput = input;
-        char c = char.MinValue;
-        for (int i = 0; i < dataInput.Length; i++)
-        {
-            if (i == dataInput.Length - 1)
-            {
-                c = dataInput[i];
-            }
-        }
-        dataInput = dataInput.Trim(c);
+        SaveManagerData smData = DataClasses.SaveManagerDataClass();
+        PlayerData pData = DataClasses.PlayerDataClass(smData.currentlySelectedSaveSlot - 1);
+        EnemyData eData = DataClasses.EnemyDataClass(smData.currentlySelectedSaveSlot - 1);
+        List<string> proxy = new List<string>();
 
         if (command.Contains("Player", StringComparison.Ordinal))
         {
@@ -82,41 +75,40 @@ public class ConfigService : IConfigService
                 if (command.Contains("Walk", StringComparison.Ordinal))
                 {
 
-                    float.TryParse(dataInput, out float result);
+                    float.TryParse(TrimDataInput(input), out float result);
                     data.pWalkSpeed = result;
-                    return FormatAllDataAfterCommand(data);
+                    pData.walkSpeed = result;
 
                 }
                 else if (command.Contains("Run", StringComparison.Ordinal))
                 {
 
-                    float.TryParse(dataInput, out float result);
+                    float.TryParse(TrimDataInput(input), out float result);
                     data.pRunSpeed = result;
-                    return FormatAllDataAfterCommand(data);
+                    pData.runSpeed = result;
 
                 }
                 else if (command.Contains("Jump", StringComparison.Ordinal))
                 {
 
-                    float.TryParse(dataInput, out float result);
+                    float.TryParse(TrimDataInput(input), out float result);
                     data.pJumpHeight = result;
-                    return FormatAllDataAfterCommand(data);
+                    pData.jumpHeight = result;
 
                 }
                 else if (command.Contains("Gravity", StringComparison.Ordinal))
                 {
 
-                    float.TryParse(dataInput, out float result);
+                    float.TryParse(TrimDataInput(input), out float result);
                     data.pGravity = result;
-                    return FormatAllDataAfterCommand(data);
+                    pData.gravity = result;
 
                 }
                 else
                 {
 
-                    List<string> proxy = new List<string>();
                     proxy.Add("Unknown command detected! Please try again.");
-                    return proxy;
+                    Debug.Log("Unknown command detected! Please try again.");
 
                 }
 
@@ -130,26 +122,24 @@ public class ConfigService : IConfigService
                     if (command.Contains("Health", StringComparison.Ordinal))
                     {
 
-                        float.TryParse(dataInput, out float result);
-                        Debug.Log(result + " | " + input + " | " + dataInput + " | " + command + " | " + result.GetType() + " == " + input.GetType());
+                        float.TryParse(TrimDataInput(input), out float result);
                         data.pMaxHealth = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.maxHealth = result;
 
                     }
                     else if (command.Contains("Mana", StringComparison.Ordinal))
                     {
 
-                        float.TryParse(dataInput, out float result);
+                        float.TryParse(TrimDataInput(input), out float result);
                         data.pMaxMana = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.maxMana = result;
 
                     }
                     else
                     {
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
 
@@ -163,25 +153,24 @@ public class ConfigService : IConfigService
                         if (command.Contains("Health", StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.pHpRegenAmount = result;
-                            return FormatAllDataAfterCommand(data);
+                            pData.hpRegenAmount = result;
 
                         }
                         else if (command.Contains("Mana", StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.pManaRegenAmount = result;
-                            return FormatAllDataAfterCommand(data);
+                            pData.manaRegenAmount = result;
 
                         }
                         else
                         {
 
-                            List<string> proxy = new List<string>();
                             proxy.Add("Unknown command detected! Please try again.");
-                            return proxy;
+                            Debug.Log("Unknown command detected! Please try again.");
 
                         }
 
@@ -192,25 +181,24 @@ public class ConfigService : IConfigService
                         if (command.Contains("Health", StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.pHpRegenCooldown = result;
-                            return FormatAllDataAfterCommand(data);
+                            pData.hpRegenCooldown = result;
 
                         }
                         else if (command.Contains("Mana", StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.pManaRegenCooldown = result;
-                            return FormatAllDataAfterCommand(data);
+                            pData.manaRegenCooldown = result;
 
                         }
                         else
                         {
 
-                            List<string> proxy = new List<string>();
                             proxy.Add("Unknown command detected! Please try again.");
-                            return proxy;
+                            Debug.Log("Unknown command detected! Please try again.");
 
                         }
 
@@ -218,9 +206,8 @@ public class ConfigService : IConfigService
                     else
                     {
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
 
@@ -231,25 +218,24 @@ public class ConfigService : IConfigService
                     if (command.Contains("Health", StringComparison.Ordinal))
                     {
 
-                        float.TryParse(dataInput, out float result);
+                        float.TryParse(TrimDataInput(input), out float result);
                         data.pHealth = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.health = result;
 
                     }
                     else if (command.Contains("Mana", StringComparison.Ordinal))
                     {
 
-                        float.TryParse(dataInput, out float result);
+                        float.TryParse(TrimDataInput(input), out float result);
                         data.pMana = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.mana = result;
 
                     }
                     else
                     {
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
 
@@ -265,25 +251,24 @@ public class ConfigService : IConfigService
                     if (command.Contains("Rate", StringComparison.Ordinal))
                     {
 
-                        int.TryParse(dataInput, out int result);
+                        int.TryParse(TrimDataInput(input), out int result);
                         data.pCritRate = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.critRate = result;
 
                     }
                     else if (command.Contains("Damage", StringComparison.Ordinal))
                     {
 
-                        float.TryParse(dataInput, out float result);
+                        float.TryParse(TrimDataInput(input), out float result);
                         data.pCritDamage = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.critDamage = result;
 
                     }
                     else
                     {
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
 
@@ -291,33 +276,32 @@ public class ConfigService : IConfigService
                 else if (command.Contains("Amount", StringComparison.Ordinal))
                 {
 
-                    float.TryParse(dataInput, out float result);
+                    float.TryParse(TrimDataInput(input), out float result);
                     data.pDamageAmount = result;
-                    return FormatAllDataAfterCommand(data);
+                    pData.damageAmount = result;
 
                 }
                 else if (command.Contains("Cooldown", StringComparison.Ordinal))
                 {
 
-                    float.TryParse(dataInput, out float result);
+                    float.TryParse(TrimDataInput(input), out float result);
                     data.pAttackCooldown = result;
-                    return FormatAllDataAfterCommand(data);
+                    pData.attackCooldown = result;
 
                 }
                 else if (command.Contains("Cost", StringComparison.Ordinal))
                 {
 
-                    float.TryParse(dataInput, out float result);
+                    float.TryParse(TrimDataInput(input), out float result);
                     data.pAttackManaCost = result;
-                    return FormatAllDataAfterCommand(data);
+                    pData.attackManaCost = result;
 
                 }
                 else
                 {
 
-                    List<string> proxy = new List<string>();
                     proxy.Add("Unknown command detected! Please try again.");
-                    return proxy;
+                    Debug.Log("Unknown command detected! Please try again.");
 
                 }
 
@@ -334,33 +318,32 @@ public class ConfigService : IConfigService
                         if (command.Contains("X", StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.camPositionX = result;
-                            return FormatAllDataAfterCommand(data);
+                            pData.camPositionX = result;
 
                         }
                         else if (command.Contains("Y", StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.camPositionY = result;
-                            return FormatAllDataAfterCommand(data);
+                            pData.camPositionY = result;
 
                         }
                         else if (command.Contains("Z", StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.camPositionZ = result;
-                            return FormatAllDataAfterCommand(data);
+                            pData.camPositionZ = result;
 
                         }
                         else
                         {
 
-                            List<string> proxy = new List<string>();
                             proxy.Add("Unknown command detected! Please try again.");
-                            return proxy;
+                            Debug.Log("Unknown command detected! Please try again.");
 
                         }
 
@@ -371,33 +354,32 @@ public class ConfigService : IConfigService
                         if (command.Contains("X", StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.camRotationX = result;
-                            return FormatAllDataAfterCommand(data);
+                            pData.camRotationX = result;
 
                         }
                         else if (command.Contains("Y", StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.camRotationY = result;
-                            return FormatAllDataAfterCommand(data);
+                            pData.camRotationY = result;
 
                         }
                         else if (command.Contains("Z", StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.camRotationZ = result;
-                            return FormatAllDataAfterCommand(data);
+                            pData.camRotationZ = result;
 
                         }
                         else
                         {
 
-                            List<string> proxy = new List<string>();
                             proxy.Add("Unknown command detected! Please try again.");
-                            return proxy;
+                            Debug.Log("Unknown command detected! Please try again.");
 
                         }
 
@@ -405,9 +387,8 @@ public class ConfigService : IConfigService
                     else
                     {
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
 
@@ -418,33 +399,32 @@ public class ConfigService : IConfigService
                     if (command.Contains("X", StringComparison.Ordinal))
                     {
 
-                        float.TryParse(dataInput, out float result);
+                        float.TryParse(TrimDataInput(input), out float result);
                         data.playerPositionX = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.playerPositionX = result;
 
                     }
                     else if (command.Contains("Y", StringComparison.Ordinal))
                     {
 
-                        float.TryParse(dataInput, out float result);
+                        float.TryParse(TrimDataInput(input), out float result);
                         data.playerPositionY = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.playerPositionY = result;
 
                     }
                     else if (command.Contains("Z", StringComparison.Ordinal))
                     {
 
-                        float.TryParse(dataInput, out float result);
+                        float.TryParse(TrimDataInput(input), out float result);
                         data.playerPositionZ = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.playerPositionZ = result;
 
                     }
                     else
                     {
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
 
@@ -455,33 +435,32 @@ public class ConfigService : IConfigService
                     if (command.Contains("X", StringComparison.Ordinal))
                     {
 
-                        float.TryParse(dataInput, out float result);
+                        float.TryParse(TrimDataInput(input), out float result);
                         data.playerRotationX = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.playerRotationX = result;
 
                     }
                     else if (command.Contains("Y", StringComparison.Ordinal))
                     {
 
-                        float.TryParse(dataInput, out float result);
+                        float.TryParse(TrimDataInput(input), out float result);
                         data.playerRotationY = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.playerRotationY = result;
 
                     }
                     else if (command.Contains("Z", StringComparison.Ordinal))
                     {
 
-                        float.TryParse(dataInput, out float result);
+                        float.TryParse(TrimDataInput(input), out float result);
                         data.playerRotationZ = result;
-                        return FormatAllDataAfterCommand(data);
+                        pData.playerRotationZ = result;
 
                     }
                     else
                     {
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
 
@@ -489,9 +468,8 @@ public class ConfigService : IConfigService
                 else
                 {
 
-                    List<string> proxy = new List<string>();
                     proxy.Add("Unknown command detected! Please try again.");
-                    return proxy;
+                    Debug.Log("Unknown command detected! Please try again.");
 
                 }
 
@@ -499,9 +477,8 @@ public class ConfigService : IConfigService
             else
             {
 
-                List<string> proxy = new List<string>();
                 proxy.Add("Unknown command detected! Please try again.");
-                return proxy;
+                Debug.Log("Unknown command detected! Please try again.");
 
             }
 
@@ -521,20 +498,19 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.eMaxHealth.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
-                                float.TryParse(dataInput, out float result);
+                                float.TryParse(TrimDataInput(input), out float result);
                                 data.eMaxHealth[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.maxHealth[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else if (command.Contains("Mana", StringComparison.Ordinal))
@@ -543,28 +519,26 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.eMaxMana.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
-                                float.TryParse(dataInput, out float result);
+                                float.TryParse(TrimDataInput(input), out float result);
                                 data.eMaxMana[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.maxMana[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else
                     {
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
 
@@ -575,20 +549,19 @@ public class ConfigService : IConfigService
                     for (int i = 0; i < data.eHealth.Count; i++)
                     {
 
-                        if (command.Contains((char)i, StringComparison.Ordinal))
+                        if (command.Contains("" + i, StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.eHealth[i] = result;
-                            return FormatAllDataAfterCommand(data);
+                            eData.health[i] = result;
 
                         }
 
                     }
 
-                    List<string> proxy = new List<string>();
                     proxy.Add("Unknown command detected! Please try again.");
-                    return proxy;
+                    Debug.Log("Unknown command detected! Please try again.");
 
                 }
                 else if (command.Contains("Mana", StringComparison.Ordinal))
@@ -597,28 +570,26 @@ public class ConfigService : IConfigService
                     for (int i = 0; i < data.eMana.Count; i++)
                     {
 
-                        if (command.Contains((char)i, StringComparison.Ordinal))
+                        if (command.Contains("" + i, StringComparison.Ordinal))
                         {
 
-                            float.TryParse(dataInput, out float result);
+                            float.TryParse(TrimDataInput(input), out float result);
                             data.eMana[i] = result;
-                            return FormatAllDataAfterCommand(data);
+                            eData.mana[i] = result;
 
                         }
 
                     }
 
-                    List<string> proxy = new List<string>();
                     proxy.Add("Unknown command detected! Please try again.");
-                    return proxy;
+                    Debug.Log("Unknown command detected! Please try again.");
 
                 }
                 else
                 {
 
-                    List<string> proxy = new List<string>();
                     proxy.Add("Unknown command detected! Please try again.");
-                    return proxy;
+                    Debug.Log("Unknown command detected! Please try again.");
 
                 }
 
@@ -635,11 +606,11 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.eDoesAIPatrol.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
                                 bool result;
-                                if (dataInput.Contains("T"))
+                                if (input.Contains("T"))
                                 {
                                     result = true;
                                 }
@@ -648,15 +619,14 @@ public class ConfigService : IConfigService
                                     result = false;
                                 }
                                 data.eDoesAIPatrol[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.doesAIPatrol[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else if (command.Contains("Route", StringComparison.Ordinal))
@@ -665,20 +635,19 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.ePatrolRouteInt.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
-                                int.TryParse(dataInput, out int result);
+                                int.TryParse(TrimDataInput(input), out int result);
                                 data.ePatrolRouteInt[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.patrolRouteInt[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else if (command.Contains("Point", StringComparison.Ordinal))
@@ -687,20 +656,19 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.ePatrolPointInt.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
-                                int.TryParse(dataInput, out int result);
+                                int.TryParse(TrimDataInput(input), out int result);
                                 data.ePatrolPointInt[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.patrolPointInt[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else if (command.Contains("Wait", StringComparison.Ordinal))
@@ -709,28 +677,26 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.ePatrolWait.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
-                                float.TryParse(dataInput, out float result);
+                                float.TryParse(TrimDataInput(input), out float result);
                                 data.ePatrolWait[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.patrolWait[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else
                     {
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
 
@@ -741,11 +707,11 @@ public class ConfigService : IConfigService
                     for (int i = 0; i < data.eDoesAIUseMagic.Count; i++)
                     {
 
-                        if (command.Contains((char)i, StringComparison.Ordinal))
+                        if (command.Contains("" + i, StringComparison.Ordinal))
                         {
 
                             bool result;
-                            if (dataInput.Contains("T"))
+                            if (input.Contains("T"))
                             {
                                 result = true;
                             }
@@ -754,23 +720,21 @@ public class ConfigService : IConfigService
                                 result = false;
                             }
                             data.eDoesAIUseMagic[i] = result;
-                            return FormatAllDataAfterCommand(data);
+                            eData.doesAIUseMagic[i] = result;
 
                         }
 
                     }
 
-                    List<string> proxy = new List<string>();
                     proxy.Add("Unknown command detected! Please try again.");
-                    return proxy;
+                    Debug.Log("Unknown command detected! Please try again.");
 
                 }
                 else
                 {
 
-                    List<string> proxy = new List<string>();
                     proxy.Add("Unknown command detected! Please try again.");
-                    return proxy;
+                    Debug.Log("Unknown command detected! Please try again.");
 
                 }
 
@@ -787,20 +751,19 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.enemyPositionX.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
-                                float.TryParse(dataInput, out float result);
+                                float.TryParse(TrimDataInput(input), out float result);
                                 data.enemyPositionX[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.enemyPositionX[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else if (command.Contains("Y", StringComparison.Ordinal))
@@ -809,20 +772,19 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.enemyPositionY.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
-                                float.TryParse(dataInput, out float result);
+                                float.TryParse(TrimDataInput(input), out float result);
                                 data.enemyPositionY[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.enemyPositionY[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else if (command.Contains("Z", StringComparison.Ordinal))
@@ -831,28 +793,26 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.enemyPositionZ.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
-                                float.TryParse(dataInput, out float result);
+                                float.TryParse(TrimDataInput(input), out float result);
                                 data.enemyPositionZ[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.enemyPositionZ[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else
                     {
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
 
@@ -866,20 +826,19 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.enemyRotationX.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
-                                float.TryParse(dataInput, out float result);
+                                float.TryParse(TrimDataInput(input), out float result);
                                 data.enemyRotationX[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.enemyRotationX[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else if (command.Contains("Y", StringComparison.Ordinal))
@@ -888,20 +847,19 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.enemyRotationY.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
-                                float.TryParse(dataInput, out float result);
+                                float.TryParse(TrimDataInput(input), out float result);
                                 data.enemyRotationY[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.enemyRotationY[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else if (command.Contains("Z", StringComparison.Ordinal))
@@ -910,28 +868,26 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.enemyRotationZ.Count; i++)
                         {
 
-                            if (command.Contains((char)i, StringComparison.Ordinal))
+                            if (command.Contains("" + i, StringComparison.Ordinal))
                             {
 
-                                float.TryParse(dataInput, out float result);
+                                float.TryParse(TrimDataInput(input), out float result);
                                 data.enemyRotationZ[i] = result;
-                                return FormatAllDataAfterCommand(data);
+                                eData.enemyRotationZ[i] = result;
 
                             }
 
                         }
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
                     else
                     {
 
-                        List<string> proxy = new List<string>();
                         proxy.Add("Unknown command detected! Please try again.");
-                        return proxy;
+                        Debug.Log("Unknown command detected! Please try again.");
 
                     }
 
@@ -939,9 +895,8 @@ public class ConfigService : IConfigService
                 else
                 {
 
-                    List<string> proxy = new List<string>();
                     proxy.Add("Unknown command detected! Please try again.");
-                    return proxy;
+                    Debug.Log("Unknown command detected! Please try again.");
 
                 }
 
@@ -949,9 +904,8 @@ public class ConfigService : IConfigService
             else
             {
 
-                List<string> proxy = new List<string>();
                 proxy.Add("Unknown command detected! Please try again.");
-                return proxy;
+                Debug.Log("Unknown command detected! Please try again.");
 
             }
 
@@ -959,15 +913,17 @@ public class ConfigService : IConfigService
         else
         {
 
-            List<string> proxy = new List<string>();
-            proxy.Add("Unknown command detected! Please try again.");
+            proxy.AddRange(OtherCommands(command, input));
             return proxy;
 
         }
 
+        proxy.AddRange(FormatAllDataAfterCommand(data, pData, eData));
+        return proxy;
+
     }
 
-    private List<string> FormatAllDataAfterCommand(ConfigData data)
+    private List<string> FormatAllDataAfterCommand(ConfigData data, PlayerData pData, EnemyData eData)
     {
 
         List<string> promptStrings = new List<string>();
@@ -1008,7 +964,7 @@ public class ConfigService : IConfigService
             promptStrings.AddRange(formatData.EnemyRotationFormat(data, 5, i));
         }
 
-        configLogic.SaveConfigData(data);
+        configLogic.SaveConfigData(data, pData, eData);
         return promptStrings;
 
     }
@@ -1025,10 +981,45 @@ public class ConfigService : IConfigService
             }
         }
         string dataInput = input.Trim(c);
+        string proxy = "";
 
-        CultureInfo culture = CultureInfo.CurrentCulture;
+        if (input.Contains(',') || input.Contains('.'))
+        {
 
-        return dataInput;
+            CultureInfo culture = CultureInfo.CurrentCulture;
+
+            for (int i = 0; i < dataInput.Length; i++)
+            {
+
+                if (dataInput.ToCharArray()[i] == '.' || dataInput.ToCharArray()[i] == ',')
+                {
+                    proxy += culture.NumberFormat.NumberDecimalSeparator;
+                }
+                else
+                {
+                    proxy += dataInput.ToCharArray()[i];
+                }
+
+            }
+
+        }
+        else
+        {
+            proxy = dataInput;
+        }
+
+        return proxy;
+
+    }
+
+    private List<string> OtherCommands(string command, string input)
+    {
+
+        List<string> proxy = new List<string>();
+
+
+
+        return proxy;
 
     }
 
@@ -1042,7 +1033,7 @@ public class FormatConfigData
 
         List<string> promptStrings = new List<string>();
 
-        foreach (CustomEnumArray ceu in PlayerPhysics(data))
+        foreach (ConfigEnumArray ceu in PlayerPhysics(data))
         {
             string prompt = "";
             for (int i = 0; i < indents; i++)
@@ -1062,7 +1053,7 @@ public class FormatConfigData
 
         List<string> promptStrings = new List<string>();
 
-        foreach (CustomEnumArray ceu in PlayerHpManaStats(data))
+        foreach (ConfigEnumArray ceu in PlayerHpManaStats(data))
         {
             string prompt = "";
             for (int i = 0; i < indents; i++)
@@ -1082,7 +1073,7 @@ public class FormatConfigData
 
         List<string> promptStrings = new List<string>();
 
-        foreach (CustomEnumArray ceu in PlayerAttack(data))
+        foreach (ConfigEnumArray ceu in PlayerAttack(data))
         {
             string prompt = "";
             for (int i = 0; i < indents; i++)
@@ -1102,7 +1093,7 @@ public class FormatConfigData
 
         List<string> promptStrings = new List<string>();
 
-        foreach (CustomEnumArray ceu in PlayerPosition(data))
+        foreach (ConfigEnumArray ceu in PlayerPosition(data))
         {
             string prompt = "";
             for (int i = 0; i < indents; i++)
@@ -1122,7 +1113,7 @@ public class FormatConfigData
 
         List<string> promptStrings = new List<string>();
 
-        foreach (CustomEnumArray ceu in PlayerRotation(data))
+        foreach (ConfigEnumArray ceu in PlayerRotation(data))
         {
             string prompt = "";
             for (int i = 0; i < indents; i++)
@@ -1142,7 +1133,7 @@ public class FormatConfigData
 
         List<string> promptStrings = new List<string>();
 
-        foreach (CustomEnumArray ceu in CameraPosition(data))
+        foreach (ConfigEnumArray ceu in CameraPosition(data))
         {
             string prompt = "";
             for (int i = 0; i < indents; i++)
@@ -1162,7 +1153,7 @@ public class FormatConfigData
 
         List<string> promptStrings = new List<string>();
 
-        foreach (CustomEnumArray ceu in CameraRotation(data))
+        foreach (ConfigEnumArray ceu in CameraRotation(data))
         {
             string prompt = "";
             for (int i = 0; i < indents; i++)
@@ -1182,7 +1173,7 @@ public class FormatConfigData
 
         List<string> promptStrings = new List<string>();
 
-        foreach (CustomEnumArray ceu in EnemyStats(data, index))
+        foreach (ConfigEnumArray ceu in EnemyStats(data, index))
         {
             string prompt = "";
             for (int i = 0; i < indents; i++)
@@ -1202,7 +1193,7 @@ public class FormatConfigData
 
         List<string> promptStrings = new List<string>();
 
-        foreach (CustomEnumArray ceu in EnemyLogic(data, index))
+        foreach (ConfigEnumArray ceu in EnemyLogic(data, index))
         {
             string prompt = "";
             for (int i = 0; i < indents; i++)
@@ -1222,7 +1213,7 @@ public class FormatConfigData
 
         List<string> promptStrings = new List<string>();
 
-        foreach (CustomEnumArray ceu in EnemyPosition(data, index))
+        foreach (ConfigEnumArray ceu in EnemyPosition(data, index))
         {
             string prompt = "";
             for (int i = 0; i < indents; i++)
@@ -1242,7 +1233,7 @@ public class FormatConfigData
 
         List<string> promptStrings = new List<string>();
 
-        foreach (CustomEnumArray ceu in EnemyRotation(data, index))
+        foreach (ConfigEnumArray ceu in EnemyRotation(data, index))
         {
             string prompt = "";
             for (int i = 0; i < indents; i++)
@@ -1257,168 +1248,228 @@ public class FormatConfigData
 
     }
 
-    CustomEnumArray[] PlayerPhysics(ConfigData data)
+    ConfigEnumArray[] PlayerPhysics(ConfigData data)
     {
 
-        CustomEnumArray[] pPhysics = new CustomEnumArray[4]
+        ConfigEnumArray[] pPhysics = new ConfigEnumArray[4]
         {
-            new CustomEnumArray("Walk Speed", data.pWalkSpeed),
-            new CustomEnumArray("Run Speed", data.pRunSpeed),
-            new CustomEnumArray("Jump Height", data.pJumpHeight),
-            new CustomEnumArray("Gravity", data.pGravity)
+            new ConfigEnumArray("Walk Speed", data.pWalkSpeed),
+            new ConfigEnumArray("Run Speed", data.pRunSpeed),
+            new ConfigEnumArray("Jump Height", data.pJumpHeight),
+            new ConfigEnumArray("Gravity", data.pGravity)
         };
 
         return pPhysics;
 
     }
 
-    CustomEnumArray[] PlayerHpManaStats(ConfigData data)
+    ConfigEnumArray[] PlayerHpManaStats(ConfigData data)
     {
 
-        CustomEnumArray[] pHpManaStats = new CustomEnumArray[8]
+        ConfigEnumArray[] pHpManaStats = new ConfigEnumArray[8]
         {
-            new CustomEnumArray("Health", data.pHealth),
-            new CustomEnumArray("Mana", data.pMana),
-            new CustomEnumArray("Max Health", data.pMaxHealth),
-            new CustomEnumArray("Max Mana", data.pMaxMana),
-            new CustomEnumArray("Health Regen Amount", data.pHpRegenAmount),
-            new CustomEnumArray("Mana Regen Amount", data.pManaRegenAmount),
-            new CustomEnumArray("Health Regen Cooldown", data.pHpRegenCooldown),
-            new CustomEnumArray("Mana Regen Cooldown", data.pManaRegenCooldown)
+            new ConfigEnumArray("Health", data.pHealth),
+            new ConfigEnumArray("Mana", data.pMana),
+            new ConfigEnumArray("Max Health", data.pMaxHealth),
+            new ConfigEnumArray("Max Mana", data.pMaxMana),
+            new ConfigEnumArray("Health Regen Amount", data.pHpRegenAmount),
+            new ConfigEnumArray("Mana Regen Amount", data.pManaRegenAmount),
+            new ConfigEnumArray("Health Regen Cooldown", data.pHpRegenCooldown),
+            new ConfigEnumArray("Mana Regen Cooldown", data.pManaRegenCooldown)
         };
 
         return pHpManaStats;
 
     }
 
-    CustomEnumArray[] PlayerAttack(ConfigData data)
+    ConfigEnumArray[] PlayerAttack(ConfigData data)
     {
 
-        CustomEnumArray[] pAttack = new CustomEnumArray[5]
+        ConfigEnumArray[] pAttack = new ConfigEnumArray[5]
         {
-            new CustomEnumArray("Damage Amount", data.pDamageAmount),
-            new CustomEnumArray("Crit Rate", data.pCritRate),
-            new CustomEnumArray("Crit Damage", data.pCritDamage),
-            new CustomEnumArray("Cooldown", data.pAttackCooldown),
-            new CustomEnumArray("Mana Cost", data.pAttackManaCost)
+            new ConfigEnumArray("Damage Amount", data.pDamageAmount),
+            new ConfigEnumArray("Crit Rate", data.pCritRate),
+            new ConfigEnumArray("Crit Damage", data.pCritDamage),
+            new ConfigEnumArray("Cooldown", data.pAttackCooldown),
+            new ConfigEnumArray("Mana Cost", data.pAttackManaCost)
         };
 
         return pAttack;
 
     }
 
-    CustomEnumArray[] PlayerPosition(ConfigData data)
+    ConfigEnumArray[] PlayerPosition(ConfigData data)
     {
 
-        CustomEnumArray[] pPosition = new CustomEnumArray[3]
+        ConfigEnumArray[] pPosition = new ConfigEnumArray[3]
         {
-            new CustomEnumArray("X", data.playerPositionX),
-            new CustomEnumArray("Y", data.playerPositionY),
-            new CustomEnumArray("Z", data.playerPositionZ)
+            new ConfigEnumArray("X", data.playerPositionX),
+            new ConfigEnumArray("Y", data.playerPositionY),
+            new ConfigEnumArray("Z", data.playerPositionZ)
         };
 
         return pPosition;
 
     }
 
-    CustomEnumArray[] PlayerRotation(ConfigData data)
+    ConfigEnumArray[] PlayerRotation(ConfigData data)
     {
 
-        CustomEnumArray[] pRotation = new CustomEnumArray[3]
+        ConfigEnumArray[] pRotation = new ConfigEnumArray[3]
         {
-            new CustomEnumArray("X", data.playerRotationX),
-            new CustomEnumArray("Y", data.playerRotationY),
-            new CustomEnumArray("Z", data.playerRotationZ)
+            new ConfigEnumArray("X", data.playerRotationX),
+            new ConfigEnumArray("Y", data.playerRotationY),
+            new ConfigEnumArray("Z", data.playerRotationZ)
         };
 
         return pRotation;
 
     }
 
-    CustomEnumArray[] CameraPosition(ConfigData data)
+    ConfigEnumArray[] CameraPosition(ConfigData data)
     {
 
-        CustomEnumArray[] cPosition = new CustomEnumArray[3]
+        ConfigEnumArray[] cPosition = new ConfigEnumArray[3]
         {
-            new CustomEnumArray("X", data.camPositionX),
-            new CustomEnumArray("Y", data.camPositionY),
-            new CustomEnumArray("Z", data.camPositionZ)
+            new ConfigEnumArray("X", data.camPositionX),
+            new ConfigEnumArray("Y", data.camPositionY),
+            new ConfigEnumArray("Z", data.camPositionZ)
         };
 
         return cPosition;
 
     }
 
-    CustomEnumArray[] CameraRotation(ConfigData data)
+    ConfigEnumArray[] CameraRotation(ConfigData data)
     {
 
-        CustomEnumArray[] cRotation = new CustomEnumArray[3]
+        ConfigEnumArray[] cRotation = new ConfigEnumArray[3]
         {
-            new CustomEnumArray("X", data.camRotationX),
-            new CustomEnumArray("Y", data.camRotationX),
-            new CustomEnumArray("Z", data.camRotationX)
+            new ConfigEnumArray("X", data.camRotationX),
+            new ConfigEnumArray("Y", data.camRotationX),
+            new ConfigEnumArray("Z", data.camRotationX)
         };
 
         return cRotation;
 
     }
 
-    CustomEnumArray[] EnemyStats(ConfigData data, int i)
+    ConfigEnumArray[] EnemyStats(ConfigData data, int i)
     {
 
-        CustomEnumArray[] eStats = new CustomEnumArray[4]
+        ConfigEnumArray[] eStats = new ConfigEnumArray[4]
         {
-            new CustomEnumArray("Health" + i, data.eHealth[i]),
-            new CustomEnumArray("Mana" + i, data.eMana[i]),
-            new CustomEnumArray("Max Health" + i, data.eMaxHealth[i]),
-            new CustomEnumArray("Max Mana" + i, data.eMaxMana[i])
+            new ConfigEnumArray("Health" + i, data.eHealth[i]),
+            new ConfigEnumArray("Mana" + i, data.eMana[i]),
+            new ConfigEnumArray("Max Health" + i, data.eMaxHealth[i]),
+            new ConfigEnumArray("Max Mana" + i, data.eMaxMana[i])
         };
 
         return eStats;
 
     }
 
-    CustomEnumArray[] EnemyLogic(ConfigData data, int i)
+    ConfigEnumArray[] EnemyLogic(ConfigData data, int i)
     {
 
-        CustomEnumArray[] eLogic = new CustomEnumArray[5]
+        ConfigEnumArray[] eLogic = new ConfigEnumArray[5]
         {
-            new CustomEnumArray("Does AI Use Magic" + i, data.eDoesAIUseMagic[i]),
-            new CustomEnumArray("Does AI Patrol" + i, data.eDoesAIPatrol[i]),
-            new CustomEnumArray("Patrol Route" + i, data.ePatrolRouteInt[i]),
-            new CustomEnumArray("Patrol Point" + i, data.ePatrolPointInt[i]),
-            new CustomEnumArray("Patrol Wait" + i, data.ePatrolWait[i])
+            new ConfigEnumArray("Does AI Use Magic" + i, data.eDoesAIUseMagic[i]),
+            new ConfigEnumArray("Does AI Patrol" + i, data.eDoesAIPatrol[i]),
+            new ConfigEnumArray("Patrol Route" + i, data.ePatrolRouteInt[i]),
+            new ConfigEnumArray("Patrol Point" + i, data.ePatrolPointInt[i]),
+            new ConfigEnumArray("Patrol Wait" + i, data.ePatrolWait[i])
         };
 
         return eLogic;
 
     }
 
-    CustomEnumArray[] EnemyPosition(ConfigData data, int i)
+    ConfigEnumArray[] EnemyPosition(ConfigData data, int i)
     {
 
-        CustomEnumArray[] ePosition = new CustomEnumArray[3]
+        ConfigEnumArray[] ePosition = new ConfigEnumArray[3]
         {
-            new CustomEnumArray("X" + i, data.enemyPositionX[i]),
-            new CustomEnumArray("Y" + i, data.enemyPositionY[i]),
-            new CustomEnumArray("Z" + i, data.enemyPositionZ[i])
+            new ConfigEnumArray("X" + i, data.enemyPositionX[i]),
+            new ConfigEnumArray("Y" + i, data.enemyPositionY[i]),
+            new ConfigEnumArray("Z" + i, data.enemyPositionZ[i])
         };
 
         return ePosition;
 
     }
 
-    CustomEnumArray[] EnemyRotation(ConfigData data, int i)
+    ConfigEnumArray[] EnemyRotation(ConfigData data, int i)
     {
 
-        CustomEnumArray[] eRotation = new CustomEnumArray[3]
+        ConfigEnumArray[] eRotation = new ConfigEnumArray[3]
         {
-            new CustomEnumArray("X" + i, data.enemyRotationX[i]),
-            new CustomEnumArray("Y" + i, data.enemyRotationY[i]),
-            new CustomEnumArray("Z" + i, data.enemyRotationZ[i])
+            new ConfigEnumArray("X" + i, data.enemyRotationX[i]),
+            new ConfigEnumArray("Y" + i, data.enemyRotationY[i]),
+            new ConfigEnumArray("Z" + i, data.enemyRotationZ[i])
         };
 
         return eRotation;
+
+    }
+
+    public PlayerEnumArray[] PlayerArray(PlayerData data)
+    {
+
+        PlayerEnumArray[] pArray = new PlayerEnumArray[23]
+        {
+            new PlayerEnumArray(0, data.walkSpeed),
+            new PlayerEnumArray(1, data.runSpeed),
+            new PlayerEnumArray(2, data.jumpHeight),
+            new PlayerEnumArray(3, data.gravity),
+            new PlayerEnumArray(4, data.health),
+            new PlayerEnumArray(5, data.mana),
+            new PlayerEnumArray(6, data.maxHealth),
+            new PlayerEnumArray(7, data.maxMana),
+            new PlayerEnumArray(8, data.hpRegenAmount),
+            new PlayerEnumArray(9, data.manaRegenAmount),
+            new PlayerEnumArray(10, data.hpRegenCooldown),
+            new PlayerEnumArray(11, data.manaRegenCooldown),
+            new PlayerEnumArray(12, data.damageAmount),
+            new PlayerEnumArray(13, data.critRate),
+            new PlayerEnumArray(14, data.critDamage),
+            new PlayerEnumArray(15, data.attackCooldown),
+            new PlayerEnumArray(16, data.attackManaCost),
+            new PlayerEnumArray(0, data.playerPositionX),
+            new PlayerEnumArray(0, data.playerPositionY),
+            new PlayerEnumArray(0, data.playerPositionZ),
+            new PlayerEnumArray(0, data.playerRotationX),
+            new PlayerEnumArray(0, data.playerRotationY),
+            new PlayerEnumArray(0, data.playerRotationZ)
+        };
+
+        return pArray;
+
+    }
+
+    public EnemyEnumArray[] EnemyArray(EnemyData data, int index)
+    {
+
+        EnemyEnumArray[] eArray = new EnemyEnumArray[15]
+        {
+            new EnemyEnumArray(index, 0, data.health),
+            new EnemyEnumArray(index, 1, data.maxHealth),
+            new EnemyEnumArray(index, 2, data.mana),
+            new EnemyEnumArray(index, 3, data.maxMana),
+            new EnemyEnumArray(index, 4, data.doesAIUseMagic),
+            new EnemyEnumArray(index, 5, data.doesAIPatrol),
+            new EnemyEnumArray(index, 6, data.patrolRouteInt),
+            new EnemyEnumArray(index, 7, data.patrolPointInt),
+            new EnemyEnumArray(index, 8, data.patrolWait),
+            new EnemyEnumArray(index, 0, data.enemyPositionX),
+            new EnemyEnumArray(index, 0, data.enemyPositionY),
+            new EnemyEnumArray(index, 0, data.enemyPositionZ),
+            new EnemyEnumArray(index, 0, data.enemyRotationX),
+            new EnemyEnumArray(index, 0, data.enemyRotationY),
+            new EnemyEnumArray(index, 0, data.enemyRotationZ)
+        };
+
+        return eArray;
 
     }
 

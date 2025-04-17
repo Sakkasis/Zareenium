@@ -377,6 +377,13 @@ public class NormEnemyBehavior : MonoBehaviour
 
     }
 
+    public void SetConfigParameters()
+    {
+
+
+
+    }
+
 }
 
 public class AILogic

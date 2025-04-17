@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
@@ -21,7 +22,11 @@ public class ConfigManager : MonoBehaviour
     TextMeshProUGUI dataTypeInput;
     TextMeshProUGUI dataCommandInput;
     List<GameObject> dataPromptsList = new List<GameObject>();
+    List<GameObject> enemiesList = new List<GameObject>();
 
+    PlayerManager pScript;
+    PlayerCamScript cScript;
+    List<NormEnemyBehavior> aiScripts;
     ConfigLogic logicScript = new ConfigLogic();
     IConfigService ConfigService = new ConfigService();
 
@@ -39,11 +44,33 @@ public class ConfigManager : MonoBehaviour
     {
 
         menuOpen = !menuOpen;
-        MenuManager menuScript = gameObject.GetComponent<MenuManager>();
+        SetDataPrompts();
         configCanvas.SetActive(menuOpen);
         settingsCanvas.SetActive(!menuOpen);
-        menuScript.settingsOpenBool = !menuOpen;
-        SetDataPrompts();
+
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+        {
+
+            MenuManager menuScript = gameObject.GetComponent<MenuManager>();
+            menuScript.settingsOpenBool = !menuOpen;
+
+        }
+        else
+        {
+
+            pScript = GameObject.FindGameObjectWithTag("bean").GetComponent<PlayerManager>();
+            cScript = Camera.main.GetComponent<PlayerCamScript>();
+            enemiesList.Clear();
+            enemiesList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
+            aiScripts.Clear();
+            for (int i = 0; i < enemiesList.Count; i++)
+            {
+                aiScripts.Add(enemiesList[i].GetComponent<NormEnemyBehavior>());
+            }
+            UIManager uiScript = gameObject.GetComponent<UIManager>();
+            uiScript.settingsOpen = !menuOpen;
+
+        }
 
     }
 
@@ -79,7 +106,7 @@ public class ConfigManager : MonoBehaviour
 
         string dataType = dataTypeInput.text;
         string dataCommand = dataCommandInput.text;
-        List<string> prompts = ConfigService.SetDataByCommand(dataCommand, dataType);
+        List<string> prompts = ConfigService.SetDataByCommand(dataCommand, dataType, pScript, cScript, aiScripts);
 
         if (dataPromptsList.Count != 0)
         {
@@ -110,7 +137,9 @@ public class ConfigLogic
 {
 
     const bool Config = true;
-    const string fileName = "ConfigData";
+    const string configFileName = "ConfigData";
+    const string playerFileName = "PlayerData";
+    const string enemyFileName = "EnemyData";
     IDataService DataService = new JsonDataService();
     IDataClasses DataClasses = new DataClasses();
 
@@ -129,7 +158,7 @@ public class ConfigLogic
         if (DataService.DoesFileExist("PlayerData" + DataClasses.SlotFileName(managerData.currentlySelectedSaveSlot - 1)))
         {
 
-            PlayerData playerData = DataClasses.PlayerDataClass(managerData.currentlySelectedSaveSlot);
+            PlayerData playerData = DataClasses.PlayerDataClass(managerData.currentlySelectedSaveSlot - 1);
             data.pWalkSpeed = playerData.walkSpeed;
             data.pRunSpeed = playerData.runSpeed;
             data.pJumpHeight = playerData.jumpHeight;
@@ -439,7 +468,7 @@ public class ConfigLogic
 
         }
 
-        DataService.SaveData(fileName, data, true);
+        DataService.SaveData(configFileName, data, true);
 
     }
 
@@ -553,7 +582,7 @@ public class ConfigLogic
         else
         {
 
-            data = DataService.LoadData<ConfigData>(fileName, true);
+            data = DataService.LoadData<ConfigData>(configFileName, true);
 
         }
 
@@ -561,10 +590,10 @@ public class ConfigLogic
 
     }
 
-    public bool SaveConfigData(ConfigData data)
+    public bool SaveConfigData(ConfigData data, PlayerData pData, EnemyData eData)
     {
 
-        if (DataService.SaveData(fileName, data, true))
+        if (DataService.SaveData(configFileName, data, true) && DataService.SaveData(playerFileName + DataClasses.SlotFileName(DataClasses.SaveManagerDataClass().currentlySelectedSaveSlot - 1), pData, false) && DataService.SaveData(enemyFileName + DataClasses.SlotFileName(DataClasses.SaveManagerDataClass().currentlySelectedSaveSlot - 1), eData, false))
         {
 
             return true;
