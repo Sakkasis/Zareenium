@@ -63,11 +63,9 @@ public class PlayerCamScript : MonoBehaviour
 
     }
 
-    public void SetConfigParameters(float x, float y, Vector3 position, Quaternion rotation)
+    public void SetConfigParameters(Vector3 position, Quaternion rotation)
     {
 
-        xMouseSensitivity = x;
-        yMouseSensitivity = y;
         gameObject.transform.SetPositionAndRotation(position, rotation);
 
     }

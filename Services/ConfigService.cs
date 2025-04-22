@@ -57,7 +57,7 @@ public class ConfigService : IConfigService
 
     }
 
-    public List<string> SetDataByCommand(string command, string input, PlayerManager pScript, PlayerCamScript cScript, List<NormEnemyBehavior> aiScript)
+    public List<string> SetDataByCommand(string command, string input, PlayerManager pScript, PlayerCamScript cScript, List<NormEnemyBehavior> aiScript, ConfigManager configScript)
     {
 
         ConfigData data = configLogic.LoadConfigData();
@@ -78,6 +78,7 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pWalkSpeed = result;
                     pData.walkSpeed = result;
+                    pScript.walkSpeed = result;
 
                 }
                 else if (command.Contains("Run", StringComparison.Ordinal))
@@ -86,6 +87,7 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pRunSpeed = result;
                     pData.runSpeed = result;
+                    pScript.runSpeed = result;
 
                 }
                 else if (command.Contains("Jump", StringComparison.Ordinal))
@@ -94,6 +96,7 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pJumpHeight = result;
                     pData.jumpHeight = result;
+                    pScript.jumpHeight = result;
 
                 }
                 else if (command.Contains("Gravity", StringComparison.Ordinal))
@@ -102,6 +105,7 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pGravity = result;
                     pData.gravity = result;
+                    pScript.gravity = result;
 
                 }
                 else
@@ -125,6 +129,7 @@ public class ConfigService : IConfigService
                         float.TryParse(TrimDataInput(input), out float result);
                         data.pMaxHealth = result;
                         pData.maxHealth = result;
+                        pScript.maxHealth = result;
 
                     }
                     else if (command.Contains("Mana", StringComparison.Ordinal))
@@ -133,6 +138,7 @@ public class ConfigService : IConfigService
                         float.TryParse(TrimDataInput(input), out float result);
                         data.pMaxMana = result;
                         pData.maxMana = result;
+                        pScript.maxMana = result;
 
                     }
                     else
@@ -156,6 +162,7 @@ public class ConfigService : IConfigService
                             float.TryParse(TrimDataInput(input), out float result);
                             data.pHpRegenAmount = result;
                             pData.hpRegenAmount = result;
+                            pScript.hpRegenAmount = result;
 
                         }
                         else if (command.Contains("Mana", StringComparison.Ordinal))
@@ -164,6 +171,7 @@ public class ConfigService : IConfigService
                             float.TryParse(TrimDataInput(input), out float result);
                             data.pManaRegenAmount = result;
                             pData.manaRegenAmount = result;
+                            pScript.manaRegenAmount = result;
 
                         }
                         else
@@ -184,6 +192,7 @@ public class ConfigService : IConfigService
                             float.TryParse(TrimDataInput(input), out float result);
                             data.pHpRegenCooldown = result;
                             pData.hpRegenCooldown = result;
+                            pScript.hpRegenCooldown = result;
 
                         }
                         else if (command.Contains("Mana", StringComparison.Ordinal))
@@ -192,6 +201,7 @@ public class ConfigService : IConfigService
                             float.TryParse(TrimDataInput(input), out float result);
                             data.pManaRegenCooldown = result;
                             pData.manaRegenCooldown = result;
+                            pScript.manaRegenCooldown = result;
 
                         }
                         else
@@ -219,8 +229,26 @@ public class ConfigService : IConfigService
                     {
 
                         float.TryParse(TrimDataInput(input), out float result);
+
+                        if (result <= 0f)
+                        {
+
+                            result = 1f;
+
+                        }
+
                         data.pHealth = result;
                         pData.health = result;
+                        pScript.health = result;
+
+                        if (result > pScript.maxHealth)
+                        {
+
+                            data.pMaxHealth = result;
+                            pData.maxHealth = result;
+                            pScript.maxHealth = result;
+
+                        }
 
                     }
                     else if (command.Contains("Mana", StringComparison.Ordinal))
@@ -229,6 +257,16 @@ public class ConfigService : IConfigService
                         float.TryParse(TrimDataInput(input), out float result);
                         data.pMana = result;
                         pData.mana = result;
+                        pScript.mana = result;
+
+                        if (result > pScript.maxMana)
+                        {
+
+                            data.pMaxMana = result;
+                            pData.maxMana = result;
+                            pScript.maxMana = result;
+
+                        }
 
                     }
                     else
@@ -252,8 +290,23 @@ public class ConfigService : IConfigService
                     {
 
                         int.TryParse(TrimDataInput(input), out int result);
+
+                        if (result > 100)
+                        {
+
+                            result = 100;
+
+                        }
+                        else if (result < 0)
+                        {
+
+                            result = 1;
+
+                        }
+
                         data.pCritRate = result;
                         pData.critRate = result;
+                        pScript.critRate = result;
 
                     }
                     else if (command.Contains("Damage", StringComparison.Ordinal))
@@ -262,6 +315,7 @@ public class ConfigService : IConfigService
                         float.TryParse(TrimDataInput(input), out float result);
                         data.pCritDamage = result;
                         pData.critDamage = result;
+                        pScript.critDamage = result;
 
                     }
                     else
@@ -279,6 +333,7 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pDamageAmount = result;
                     pData.damageAmount = result;
+                    pScript.damageAmount = result;
 
                 }
                 else if (command.Contains("Cooldown", StringComparison.Ordinal))
@@ -287,6 +342,7 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pAttackCooldown = result;
                     pData.attackCooldown = result;
+                    pScript.attackCooldown = result;
 
                 }
                 else if (command.Contains("Cost", StringComparison.Ordinal))
@@ -295,6 +351,7 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pAttackManaCost = result;
                     pData.attackManaCost = result;
+                    pScript.attackManaCost = result;
 
                 }
                 else
@@ -392,6 +449,10 @@ public class ConfigService : IConfigService
 
                     }
 
+                    Vector3 position = new Vector3(pData.camPositionX, pData.camPositionY, pData.camPositionZ);
+                    Quaternion rotation = new Quaternion(pData.camRotationX, pData.camRotationY, pData.camRotationZ, 0);
+                    cScript.SetConfigParameters(position, rotation);
+
                 }
                 else if (command.Contains("Position", StringComparison.Ordinal))
                 {
@@ -428,6 +489,10 @@ public class ConfigService : IConfigService
 
                     }
 
+                    Vector3 position = new Vector3(pData.playerPositionX, pData.playerPositionY, pData.playerPositionZ);
+                    Quaternion rotation = new Quaternion(pData.playerRotationX, pData.playerRotationY, pData.playerRotationZ, 0);
+                    pScript.SetConfigParameters(position, rotation);
+
                 }
                 else if (command.Contains("Rotation", StringComparison.Ordinal))
                 {
@@ -463,6 +528,10 @@ public class ConfigService : IConfigService
                         Debug.Log("Unknown command detected! Please try again.");
 
                     }
+
+                    Vector3 position = new Vector3(pData.playerPositionX, pData.playerPositionY, pData.playerPositionZ);
+                    Quaternion rotation = new Quaternion(pData.playerRotationX, pData.playerRotationY, pData.playerRotationZ, 0);
+                    pScript.SetConfigParameters(position, rotation);
 
                 }
                 else
@@ -504,6 +573,7 @@ public class ConfigService : IConfigService
                                 float.TryParse(TrimDataInput(input), out float result);
                                 data.eMaxHealth[i] = result;
                                 eData.maxHealth[i] = result;
+                                aiScript[i].maxHealth = result;
 
                             }
 
@@ -525,6 +595,7 @@ public class ConfigService : IConfigService
                                 float.TryParse(TrimDataInput(input), out float result);
                                 data.eMaxMana[i] = result;
                                 eData.maxMana[i] = result;
+                                aiScript[i].maxMana = result;
 
                             }
 
@@ -555,6 +626,7 @@ public class ConfigService : IConfigService
                             float.TryParse(TrimDataInput(input), out float result);
                             data.eHealth[i] = result;
                             eData.health[i] = result;
+                            aiScript[i].health = result;
 
                         }
 
@@ -576,6 +648,7 @@ public class ConfigService : IConfigService
                             float.TryParse(TrimDataInput(input), out float result);
                             data.eMana[i] = result;
                             eData.mana[i] = result;
+                            aiScript[i].mana = result;
 
                         }
 
@@ -620,6 +693,7 @@ public class ConfigService : IConfigService
                                 }
                                 data.eDoesAIPatrol[i] = result;
                                 eData.doesAIPatrol[i] = result;
+                                aiScript[i].doesAIPatrol = result;
 
                             }
 
@@ -641,6 +715,7 @@ public class ConfigService : IConfigService
                                 int.TryParse(TrimDataInput(input), out int result);
                                 data.ePatrolRouteInt[i] = result;
                                 eData.patrolRouteInt[i] = result;
+                                aiScript[i].patrolRouteInt = result;
 
                             }
 
@@ -662,6 +737,7 @@ public class ConfigService : IConfigService
                                 int.TryParse(TrimDataInput(input), out int result);
                                 data.ePatrolPointInt[i] = result;
                                 eData.patrolPointInt[i] = result;
+                                aiScript[i].patrolPointInt = result;
 
                             }
 
@@ -683,6 +759,7 @@ public class ConfigService : IConfigService
                                 float.TryParse(TrimDataInput(input), out float result);
                                 data.ePatrolWait[i] = result;
                                 eData.patrolWait[i] = result;
+                                aiScript[i].patrolWaitFloat = result;
 
                             }
 
@@ -711,7 +788,7 @@ public class ConfigService : IConfigService
                         {
 
                             bool result;
-                            if (input.Contains("T"))
+                            if (input.Contains("T", StringComparison.Ordinal))
                             {
                                 result = true;
                             }
@@ -721,6 +798,7 @@ public class ConfigService : IConfigService
                             }
                             data.eDoesAIUseMagic[i] = result;
                             eData.doesAIUseMagic[i] = result;
+                            aiScript[i].doesAIUseMagic = result;
 
                         }
 
@@ -900,6 +978,15 @@ public class ConfigService : IConfigService
 
                 }
 
+                for (int i = 0; i < data.eHealth.Count; i++)
+                {
+
+                    Vector3 position = new Vector3(eData.enemyPositionX[i], eData.enemyPositionY[i], eData.enemyPositionZ[i]);
+                    Quaternion rotation = new Quaternion(eData.enemyRotationX[i], eData.enemyRotationY[i], eData.enemyRotationZ[i], 0);
+                    aiScript[i].SetConfigParameters(position, rotation);
+
+                }
+
             }
             else
             {
@@ -913,7 +1000,20 @@ public class ConfigService : IConfigService
         else
         {
 
-            proxy.AddRange(OtherCommands(command, input));
+            if (OtherCommands(command, TrimDataInput(input), configScript))
+            {
+
+                proxy.AddRange(FormatAllDataAfterCommand(data, pData, eData));
+
+            }
+            else
+            {
+
+                proxy.Add("Unknown command detected! Please try again.");
+                Debug.Log("Unknown command detected! Please try again.");
+
+            }
+
             return proxy;
 
         }
@@ -1012,14 +1112,23 @@ public class ConfigService : IConfigService
 
     }
 
-    private List<string> OtherCommands(string command, string input)
+    private bool OtherCommands(string command, string input, ConfigManager configScript)
     {
 
-        List<string> proxy = new List<string>();
+        if (command.Contains("Suicide", StringComparison.Ordinal))
+        {
 
+            configScript.pScript.health = -1f;
+            return true;
 
+        }
+        else
+        {
 
-        return proxy;
+            Debug.Log("Unknown command detected! Please try again.");
+            return false;
+
+        }
 
     }
 
@@ -1410,66 +1519,6 @@ public class FormatConfigData
         };
 
         return eRotation;
-
-    }
-
-    public PlayerEnumArray[] PlayerArray(PlayerData data)
-    {
-
-        PlayerEnumArray[] pArray = new PlayerEnumArray[23]
-        {
-            new PlayerEnumArray(0, data.walkSpeed),
-            new PlayerEnumArray(1, data.runSpeed),
-            new PlayerEnumArray(2, data.jumpHeight),
-            new PlayerEnumArray(3, data.gravity),
-            new PlayerEnumArray(4, data.health),
-            new PlayerEnumArray(5, data.mana),
-            new PlayerEnumArray(6, data.maxHealth),
-            new PlayerEnumArray(7, data.maxMana),
-            new PlayerEnumArray(8, data.hpRegenAmount),
-            new PlayerEnumArray(9, data.manaRegenAmount),
-            new PlayerEnumArray(10, data.hpRegenCooldown),
-            new PlayerEnumArray(11, data.manaRegenCooldown),
-            new PlayerEnumArray(12, data.damageAmount),
-            new PlayerEnumArray(13, data.critRate),
-            new PlayerEnumArray(14, data.critDamage),
-            new PlayerEnumArray(15, data.attackCooldown),
-            new PlayerEnumArray(16, data.attackManaCost),
-            new PlayerEnumArray(0, data.playerPositionX),
-            new PlayerEnumArray(0, data.playerPositionY),
-            new PlayerEnumArray(0, data.playerPositionZ),
-            new PlayerEnumArray(0, data.playerRotationX),
-            new PlayerEnumArray(0, data.playerRotationY),
-            new PlayerEnumArray(0, data.playerRotationZ)
-        };
-
-        return pArray;
-
-    }
-
-    public EnemyEnumArray[] EnemyArray(EnemyData data, int index)
-    {
-
-        EnemyEnumArray[] eArray = new EnemyEnumArray[15]
-        {
-            new EnemyEnumArray(index, 0, data.health),
-            new EnemyEnumArray(index, 1, data.maxHealth),
-            new EnemyEnumArray(index, 2, data.mana),
-            new EnemyEnumArray(index, 3, data.maxMana),
-            new EnemyEnumArray(index, 4, data.doesAIUseMagic),
-            new EnemyEnumArray(index, 5, data.doesAIPatrol),
-            new EnemyEnumArray(index, 6, data.patrolRouteInt),
-            new EnemyEnumArray(index, 7, data.patrolPointInt),
-            new EnemyEnumArray(index, 8, data.patrolWait),
-            new EnemyEnumArray(index, 0, data.enemyPositionX),
-            new EnemyEnumArray(index, 0, data.enemyPositionY),
-            new EnemyEnumArray(index, 0, data.enemyPositionZ),
-            new EnemyEnumArray(index, 0, data.enemyRotationX),
-            new EnemyEnumArray(index, 0, data.enemyRotationY),
-            new EnemyEnumArray(index, 0, data.enemyRotationZ)
-        };
-
-        return eArray;
 
     }
 

@@ -377,10 +377,10 @@ public class NormEnemyBehavior : MonoBehaviour
 
     }
 
-    public void SetConfigParameters()
+    public void SetConfigParameters(Vector3 position, Quaternion rotation)
     {
 
-
+        gameObject.transform.SetPositionAndRotation(position, rotation);
 
     }
 

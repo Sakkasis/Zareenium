@@ -394,10 +394,10 @@ public class PlayerManager : MonoBehaviour
 
     }
 
-    public void SetConfigParameters(PlayerEnumArray[] pArray, int index)
+    public void SetConfigParameters(Vector3 position, Quaternion rotation)
     {
 
-
+        gameObject.transform.SetPositionAndRotation(position, rotation);
 
     }
 

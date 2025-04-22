@@ -24,9 +24,10 @@ public class ConfigManager : MonoBehaviour
     List<GameObject> dataPromptsList = new List<GameObject>();
     List<GameObject> enemiesList = new List<GameObject>();
 
-    PlayerManager pScript;
-    PlayerCamScript cScript;
-    List<NormEnemyBehavior> aiScripts;
+    [field: NonSerialized] public PlayerManager pScript;
+    [field: NonSerialized] public PlayerCamScript cScript;
+    [field: NonSerialized] public List<NormEnemyBehavior> aiScripts;
+
     ConfigLogic logicScript = new ConfigLogic();
     IConfigService ConfigService = new ConfigService();
 
@@ -106,7 +107,7 @@ public class ConfigManager : MonoBehaviour
 
         string dataType = dataTypeInput.text;
         string dataCommand = dataCommandInput.text;
-        List<string> prompts = ConfigService.SetDataByCommand(dataCommand, dataType, pScript, cScript, aiScripts);
+        List<string> prompts = ConfigService.SetDataByCommand(dataCommand, dataType, pScript, cScript, aiScripts, this);
 
         if (dataPromptsList.Count != 0)
         {
