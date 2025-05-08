@@ -833,6 +833,7 @@ public class SaveManager : MonoBehaviour
     {
 
         loadSavedGameStateClass.LoadSettingsDataBool();
+        audioManagerScript.LoadAudioSettings();
 
     }
 
@@ -840,6 +841,7 @@ public class SaveManager : MonoBehaviour
     {
 
         saveGameStateClass.SaveSettingsDataBool();
+        audioManagerScript.SaveAudioSettings();
 
     }
 

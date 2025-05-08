@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
@@ -78,7 +79,11 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pWalkSpeed = result;
                     pData.walkSpeed = result;
-                    pScript.walkSpeed = result;
+                    
+                    if (SceneManager.GetActiveScene().buildIndex != 0)
+                    {
+                        pScript.walkSpeed = result;
+                    }
 
                 }
                 else if (command.Contains("Run", StringComparison.Ordinal))
@@ -87,7 +92,11 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pRunSpeed = result;
                     pData.runSpeed = result;
-                    pScript.runSpeed = result;
+                    
+                    if (SceneManager.GetActiveScene().buildIndex != 0)
+                    {
+                        pScript.runSpeed = result;
+                    }
 
                 }
                 else if (command.Contains("Jump", StringComparison.Ordinal))
@@ -96,7 +105,11 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pJumpHeight = result;
                     pData.jumpHeight = result;
-                    pScript.jumpHeight = result;
+                    
+                    if (SceneManager.GetActiveScene().buildIndex != 0)
+                    {
+                        pScript.jumpHeight = result;
+                    }
 
                 }
                 else if (command.Contains("Gravity", StringComparison.Ordinal))
@@ -105,7 +118,11 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pGravity = result;
                     pData.gravity = result;
-                    pScript.gravity = result;
+                    
+                    if (SceneManager.GetActiveScene().buildIndex != 0)
+                    {
+                        pScript.gravity = result;
+                    }
 
                 }
                 else
@@ -127,18 +144,136 @@ public class ConfigService : IConfigService
                     {
 
                         float.TryParse(TrimDataInput(input), out float result);
-                        data.pMaxHealth = result;
-                        pData.maxHealth = result;
-                        pScript.maxHealth = result;
+
+                        if (result > 0f)
+                        {
+
+                            if (pData.health > result)
+                            {
+
+                                pData.maxHealth = result;
+                                data.pMaxHealth = result;
+                                pData.health = result;
+                                data.pHealth = result;
+
+                            }
+                            else
+                            {
+
+                                pData.maxHealth = result;
+                                data.pMaxHealth = result;
+
+                            }
+
+                            Debug.Log((pData.health > result) + " | " + pData.health + " | " + pData.maxHealth + " | " + result);
+
+                        }
+                        else
+                        {
+
+                            pData.maxHealth = 1f;
+                            data.pMaxHealth = 1f;
+                            pData.health = 1f;
+                            data.pHealth = 1f;
+
+                        }
+
+                        if (SceneManager.GetActiveScene().buildIndex != 0)
+                        {
+
+                            if (result > 0f)
+                            {
+
+                                if (pScript.health < result)
+                                {
+
+                                    pScript.maxHealth = result;
+                                    pScript.health = result;
+
+                                }
+                                else
+                                {
+
+                                    pScript.maxHealth = result;
+
+                                }
+
+                            }
+                            else
+                            {
+
+                                pScript.maxHealth = 1f;
+                                pScript.health = 1f;
+
+                            }
+
+                        }
 
                     }
                     else if (command.Contains("Mana", StringComparison.Ordinal))
                     {
 
                         float.TryParse(TrimDataInput(input), out float result);
-                        data.pMaxMana = result;
-                        pData.maxMana = result;
-                        pScript.maxMana = result;
+
+                        if (result > 0f)
+                        {
+
+                            if (pData.mana > result)
+                            {
+
+                                pData.maxMana = result;
+                                data.pMaxMana = result;
+                                pData.mana = result;
+                                data.pMana = result;
+
+                            }
+                            else
+                            {
+
+                                pData.maxMana = result;
+                                data.pMaxMana = result;
+
+                            }
+
+                        }
+                        else
+                        {
+
+                            pData.maxMana = 1f;
+                            data.pMaxMana = 1f;
+
+                        }
+
+                        if (SceneManager.GetActiveScene().buildIndex != 0)
+                        {
+
+                            if (result > 0f)
+                            {
+
+                                if (pScript.mana > result)
+                                {
+
+                                    pScript.maxMana = result;
+                                    pScript.mana = result;
+
+                                }
+                                else
+                                {
+
+                                    pScript.maxMana = result;
+
+                                }
+
+                            }
+                            else
+                            {
+
+                                pScript.maxMana = 1f;
+                                pScript.mana = 1f;
+
+                            }
+
+                        }
 
                     }
                     else
@@ -162,7 +297,11 @@ public class ConfigService : IConfigService
                             float.TryParse(TrimDataInput(input), out float result);
                             data.pHpRegenAmount = result;
                             pData.hpRegenAmount = result;
-                            pScript.hpRegenAmount = result;
+                            
+                            if (SceneManager.GetActiveScene().buildIndex != 0)
+                            {
+                                pScript.hpRegenAmount = result;
+                            }
 
                         }
                         else if (command.Contains("Mana", StringComparison.Ordinal))
@@ -171,7 +310,11 @@ public class ConfigService : IConfigService
                             float.TryParse(TrimDataInput(input), out float result);
                             data.pManaRegenAmount = result;
                             pData.manaRegenAmount = result;
-                            pScript.manaRegenAmount = result;
+                            
+                            if (SceneManager.GetActiveScene().buildIndex != 0)
+                            {
+                                pScript.manaRegenAmount = result;
+                            }
 
                         }
                         else
@@ -192,7 +335,11 @@ public class ConfigService : IConfigService
                             float.TryParse(TrimDataInput(input), out float result);
                             data.pHpRegenCooldown = result;
                             pData.hpRegenCooldown = result;
-                            pScript.hpRegenCooldown = result;
+                            
+                            if (SceneManager.GetActiveScene().buildIndex != 0)
+                            {
+                                pScript.hpRegenCooldown = result;
+                            }
 
                         }
                         else if (command.Contains("Mana", StringComparison.Ordinal))
@@ -201,7 +348,11 @@ public class ConfigService : IConfigService
                             float.TryParse(TrimDataInput(input), out float result);
                             data.pManaRegenCooldown = result;
                             pData.manaRegenCooldown = result;
-                            pScript.manaRegenCooldown = result;
+                            
+                            if (SceneManager.GetActiveScene().buildIndex != 0)
+                            {
+                                pScript.manaRegenCooldown = result;
+                            }
 
                         }
                         else
@@ -230,23 +381,62 @@ public class ConfigService : IConfigService
 
                         float.TryParse(TrimDataInput(input), out float result);
 
-                        if (result <= 0f)
+                        if (result > 0f)
                         {
 
-                            result = 1f;
+                            if (pData.maxHealth < result)
+                            {
+
+                                pData.maxHealth = result;
+                                data.pMaxHealth = result;
+                                pData.health = result;
+                                data.pHealth = result;
+
+                            }
+                            else
+                            {
+
+                                pData.health = result;
+                                data.pHealth = result;
+
+                            }
+
+                        }
+                        else
+                        {
+
+                            pData.health = 1f;
+                            data.pHealth = 1f;
 
                         }
 
-                        data.pHealth = result;
-                        pData.health = result;
-                        pScript.health = result;
-
-                        if (result > pScript.maxHealth)
+                        if (SceneManager.GetActiveScene().buildIndex != 0)
                         {
 
-                            data.pMaxHealth = result;
-                            pData.maxHealth = result;
-                            pScript.maxHealth = result;
+                            if (result > 0f)
+                            {
+
+                                if (pScript.maxHealth < result)
+                                {
+
+                                    pScript.maxHealth = result;
+                                    pScript.health = result;
+
+                                }
+                                else
+                                {
+
+                                    pScript.health = result;
+
+                                }
+
+                            }
+                            else
+                            {
+
+                                pScript.health = 1f;
+
+                            }
 
                         }
 
@@ -255,16 +445,63 @@ public class ConfigService : IConfigService
                     {
 
                         float.TryParse(TrimDataInput(input), out float result);
-                        data.pMana = result;
-                        pData.mana = result;
-                        pScript.mana = result;
 
-                        if (result > pScript.maxMana)
+                        if (result > 0f)
                         {
 
-                            data.pMaxMana = result;
-                            pData.maxMana = result;
-                            pScript.maxMana = result;
+                            if (pData.maxMana < result)
+                            {
+
+                                pData.maxMana = result;
+                                data.pMaxMana = result;
+                                pData.mana = result;
+                                data.pMana = result;
+
+                            }
+                            else
+                            {
+
+                                pData.mana = result;
+                                data.pMana = result;
+
+                            }
+
+                        }
+                        else
+                        {
+
+                            pData.mana = 1f;
+                            data.pMana = 1f;
+
+                        }
+
+                        if (SceneManager.GetActiveScene().buildIndex != 0)
+                        {
+
+                            if (result > 0f)
+                            {
+
+                                if (pScript.maxMana < result)
+                                {
+
+                                    pScript.maxMana = result;
+                                    pScript.mana = result;
+
+                                }
+                                else
+                                {
+
+                                    pScript.mana = result;
+
+                                }
+
+                            }
+                            else
+                            {
+
+                                pScript.mana = 1f;
+
+                            }
 
                         }
 
@@ -306,7 +543,11 @@ public class ConfigService : IConfigService
 
                         data.pCritRate = result;
                         pData.critRate = result;
-                        pScript.critRate = result;
+                        
+                        if (SceneManager.GetActiveScene().buildIndex != 0)
+                        {
+                            pScript.critRate = result;
+                        }
 
                     }
                     else if (command.Contains("Damage", StringComparison.Ordinal))
@@ -315,7 +556,11 @@ public class ConfigService : IConfigService
                         float.TryParse(TrimDataInput(input), out float result);
                         data.pCritDamage = result;
                         pData.critDamage = result;
-                        pScript.critDamage = result;
+
+                        if (SceneManager.GetActiveScene().buildIndex != 0)
+                        {
+                            pScript.critDamage = result;
+                        }
 
                     }
                     else
@@ -333,7 +578,11 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pDamageAmount = result;
                     pData.damageAmount = result;
-                    pScript.damageAmount = result;
+                    
+                    if (SceneManager.GetActiveScene().buildIndex != 0)
+                    {
+                        pScript.damageAmount = result;
+                    }
 
                 }
                 else if (command.Contains("Cooldown", StringComparison.Ordinal))
@@ -342,7 +591,11 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pAttackCooldown = result;
                     pData.attackCooldown = result;
-                    pScript.attackCooldown = result;
+                    
+                    if (SceneManager.GetActiveScene().buildIndex != 0)
+                    {
+                        pScript.attackCooldown = result;
+                    }
 
                 }
                 else if (command.Contains("Cost", StringComparison.Ordinal))
@@ -351,7 +604,11 @@ public class ConfigService : IConfigService
                     float.TryParse(TrimDataInput(input), out float result);
                     data.pAttackManaCost = result;
                     pData.attackManaCost = result;
-                    pScript.attackManaCost = result;
+                    
+                    if (SceneManager.GetActiveScene().buildIndex != 0)
+                    {
+                        pScript.attackManaCost = result;
+                    }
 
                 }
                 else
@@ -451,7 +708,11 @@ public class ConfigService : IConfigService
 
                     Vector3 position = new Vector3(pData.camPositionX, pData.camPositionY, pData.camPositionZ);
                     Quaternion rotation = new Quaternion(pData.camRotationX, pData.camRotationY, pData.camRotationZ, 0);
-                    cScript.SetConfigParameters(position, rotation);
+                    
+                    if (SceneManager.GetActiveScene().buildIndex != 0)
+                    {
+                        cScript.SetConfigParameters(position, rotation);
+                    }
 
                 }
                 else if (command.Contains("Position", StringComparison.Ordinal))
@@ -491,7 +752,11 @@ public class ConfigService : IConfigService
 
                     Vector3 position = new Vector3(pData.playerPositionX, pData.playerPositionY, pData.playerPositionZ);
                     Quaternion rotation = new Quaternion(pData.playerRotationX, pData.playerRotationY, pData.playerRotationZ, 0);
-                    pScript.SetConfigParameters(position, rotation);
+                    
+                    if (SceneManager.GetActiveScene().buildIndex != 0)
+                    {
+                        pScript.SetConfigParameters(position, rotation);
+                    }
 
                 }
                 else if (command.Contains("Rotation", StringComparison.Ordinal))
@@ -531,7 +796,11 @@ public class ConfigService : IConfigService
 
                     Vector3 position = new Vector3(pData.playerPositionX, pData.playerPositionY, pData.playerPositionZ);
                     Quaternion rotation = new Quaternion(pData.playerRotationX, pData.playerRotationY, pData.playerRotationZ, 0);
-                    pScript.SetConfigParameters(position, rotation);
+                    
+                    if (SceneManager.GetActiveScene().buildIndex != 0)
+                    {
+                        pScript.SetConfigParameters(position, rotation);
+                    }
 
                 }
                 else
@@ -571,9 +840,67 @@ public class ConfigService : IConfigService
                             {
 
                                 float.TryParse(TrimDataInput(input), out float result);
-                                data.eMaxHealth[i] = result;
-                                eData.maxHealth[i] = result;
-                                aiScript[i].maxHealth = result;
+                                
+                                if (result > 0f)
+                                {
+
+                                    if (data.eHealth[i] > result)
+                                    {
+
+                                        data.eMaxHealth[i] = result;
+                                        data.eHealth[i] = result;
+                                        eData.maxHealth[i] = result;
+                                        eData.health[i] = result;
+
+                                    }
+                                    else
+                                    {
+
+                                        data.eMaxHealth[i] = result;
+                                        eData.maxHealth[i] = result;
+
+                                    }
+
+                                }
+                                else
+                                {
+
+                                    data.eMaxHealth[i] = 1f;
+                                    data.eHealth[i] = 1f;
+                                    eData.maxHealth[i] = 1f;
+                                    eData.health[i] = 1f;
+
+                                }
+
+                                if (SceneManager.GetActiveScene().buildIndex != 0)
+                                {
+
+                                    if (result > 0f)
+                                    {
+
+                                        if (aiScript[i].health > result)
+                                        {
+
+                                            aiScript[i].maxHealth = result;
+                                            aiScript[i].health = result;
+
+                                        }
+                                        else
+                                        {
+
+                                            aiScript[i].maxHealth = result;
+
+                                        }
+
+                                    }
+                                    else
+                                    {
+
+                                        aiScript[i].maxHealth = 1f;
+                                        aiScript[i].health = 1f;
+                                    }
+
+                                }
 
                             }
 
@@ -589,13 +916,66 @@ public class ConfigService : IConfigService
                         for (int i = 0; i < data.eMaxMana.Count; i++)
                         {
 
-                            if (command.Contains("" + i, StringComparison.Ordinal))
+                            float.TryParse(TrimDataInput(input), out float result);
+
+                            if (result > 0f)
                             {
 
-                                float.TryParse(TrimDataInput(input), out float result);
-                                data.eMaxMana[i] = result;
-                                eData.maxMana[i] = result;
-                                aiScript[i].maxMana = result;
+                                if (data.eMana[i] > result)
+                                {
+
+                                    data.eMaxMana[i] = result;
+                                    data.eMana[i] = result;
+                                    eData.maxMana[i] = result;
+                                    eData.mana[i] = result;
+
+                                }
+                                else
+                                {
+
+                                    data.eMaxMana[i] = result;
+                                    eData.maxMana[i] = result;
+
+                                }
+
+                            }
+                            else
+                            {
+
+                                data.eMaxMana[i] = 1f;
+                                data.eMana[i] = 1f;
+                                eData.maxMana[i] = 1f;
+                                eData.mana[i] = 1f;
+
+                            }
+
+                            if (SceneManager.GetActiveScene().buildIndex != 0)
+                            {
+
+                                if (result > 0f)
+                                {
+
+                                    if (aiScript[i].mana > result)
+                                    {
+
+                                        aiScript[i].maxMana = result;
+                                        aiScript[i].mana = result;
+
+                                    }
+                                    else
+                                    {
+
+                                        aiScript[i].maxMana = result;
+
+                                    }
+
+                                }
+                                else
+                                {
+
+                                    aiScript[i].maxMana = 1f;
+                                    aiScript[i].mana = 1f;
+                                }
 
                             }
 
@@ -624,9 +1004,65 @@ public class ConfigService : IConfigService
                         {
 
                             float.TryParse(TrimDataInput(input), out float result);
-                            data.eHealth[i] = result;
-                            eData.health[i] = result;
-                            aiScript[i].health = result;
+
+                            if (result > 0f)
+                            {
+
+                                if (data.eMaxHealth[i] < result)
+                                {
+
+                                    data.eHealth[i] = result;
+                                    data.eMaxHealth[i] = result;
+                                    eData.health[i] = result;
+                                    eData.maxHealth[i] = result;
+
+                                }
+                                else
+                                {
+
+                                    data.eHealth[i] = result;
+                                    eData.health[i] = result;
+
+                                }
+
+                            }
+                            else
+                            {
+
+                                data.eHealth[i] = 1f;
+                                eData.health[i] = 1f;
+
+                            }
+                            
+                            if (SceneManager.GetActiveScene().buildIndex != 0)
+                            {
+
+                                if (result > 0f)
+                                {
+
+                                    if (aiScript[i].maxHealth < result)
+                                    {
+
+                                        aiScript[i].health = result;
+                                        aiScript[i].maxHealth = result;
+
+                                    }
+                                    else
+                                    {
+
+                                        aiScript[i].health = result;
+
+                                    }
+
+                                }
+                                else
+                                {
+
+                                    aiScript[i].health = 1f;
+
+                                }
+
+                            }
 
                         }
 
@@ -648,7 +1084,11 @@ public class ConfigService : IConfigService
                             float.TryParse(TrimDataInput(input), out float result);
                             data.eMana[i] = result;
                             eData.mana[i] = result;
-                            aiScript[i].mana = result;
+                            
+                            if (SceneManager.GetActiveScene().buildIndex != 0)
+                            {
+                                aiScript[i].mana = result;
+                            }
 
                         }
 
@@ -693,7 +1133,11 @@ public class ConfigService : IConfigService
                                 }
                                 data.eDoesAIPatrol[i] = result;
                                 eData.doesAIPatrol[i] = result;
-                                aiScript[i].doesAIPatrol = result;
+                                
+                                if (SceneManager.GetActiveScene().buildIndex != 0)
+                                {
+                                    aiScript[i].doesAIPatrol = result;
+                                }
 
                             }
 
@@ -715,7 +1159,11 @@ public class ConfigService : IConfigService
                                 int.TryParse(TrimDataInput(input), out int result);
                                 data.ePatrolRouteInt[i] = result;
                                 eData.patrolRouteInt[i] = result;
-                                aiScript[i].patrolRouteInt = result;
+                                
+                                if (SceneManager.GetActiveScene().buildIndex != 0)
+                                {
+                                    aiScript[i].patrolRouteInt = result;
+                                }
 
                             }
 
@@ -737,7 +1185,11 @@ public class ConfigService : IConfigService
                                 int.TryParse(TrimDataInput(input), out int result);
                                 data.ePatrolPointInt[i] = result;
                                 eData.patrolPointInt[i] = result;
-                                aiScript[i].patrolPointInt = result;
+                                
+                                if (SceneManager.GetActiveScene().buildIndex != 0)
+                                {
+                                    aiScript[i].patrolPointInt = result;
+                                }
 
                             }
 
@@ -759,7 +1211,11 @@ public class ConfigService : IConfigService
                                 float.TryParse(TrimDataInput(input), out float result);
                                 data.ePatrolWait[i] = result;
                                 eData.patrolWait[i] = result;
-                                aiScript[i].patrolWaitFloat = result;
+                                
+                                if (SceneManager.GetActiveScene().buildIndex != 0)
+                                {
+                                    aiScript[i].patrolWaitFloat = result;
+                                }
 
                             }
 
@@ -798,7 +1254,11 @@ public class ConfigService : IConfigService
                             }
                             data.eDoesAIUseMagic[i] = result;
                             eData.doesAIUseMagic[i] = result;
-                            aiScript[i].doesAIUseMagic = result;
+                            
+                            if (SceneManager.GetActiveScene().buildIndex != 0)
+                            {
+                                aiScript[i].doesAIUseMagic = result;
+                            }
 
                         }
 
@@ -983,7 +1443,11 @@ public class ConfigService : IConfigService
 
                     Vector3 position = new Vector3(eData.enemyPositionX[i], eData.enemyPositionY[i], eData.enemyPositionZ[i]);
                     Quaternion rotation = new Quaternion(eData.enemyRotationX[i], eData.enemyRotationY[i], eData.enemyRotationZ[i], 0);
-                    aiScript[i].SetConfigParameters(position, rotation);
+                    
+                    if (SceneManager.GetActiveScene().buildIndex != 0)
+                    {
+                        aiScript[i].SetConfigParameters(position, rotation);
+                    }
 
                 }
 

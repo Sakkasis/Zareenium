@@ -8,8 +8,7 @@ public class PlayerCamScript : MonoBehaviour
     public float xMouseSensitivity = 6f;
     public float yMouseSensitivity = 6f;
 
-    [field: NonSerialized]
-    public bool disableCam = false;
+    [field: NonSerialized] public bool disableCam = false;
 
     Vector2 currentRotation;
     GameObject beanObject;
