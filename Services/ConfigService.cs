@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
@@ -1464,21 +1463,7 @@ public class ConfigService : IConfigService
         else
         {
 
-            if (OtherCommands(command, TrimDataInput(input), configScript))
-            {
-
-                proxy.AddRange(FormatAllDataAfterCommand(data, pData, eData));
-
-            }
-            else
-            {
-
-                proxy.Add("Unknown command detected! Please try again.");
-                Debug.Log("Unknown command detected! Please try again.");
-
-            }
-
-            return proxy;
+            OtherCommands(command, TrimDataInput(input), configScript);
 
         }
 
@@ -1583,13 +1568,15 @@ public class ConfigService : IConfigService
         {
 
             configScript.pScript.health = -1f;
+            configScript.pScript.PlayerTakesDamage(0f, 120f);
+            configScript.confirmCommandText.SetText("Sucessfully executed command:\n" + command);
             return true;
 
         }
         else
         {
 
-            Debug.Log("Unknown command detected! Please try again.");
+            configScript.confirmCommandText.SetText("Sucessfully executed command:\n" + command);
             return false;
 
         }

@@ -154,7 +154,8 @@ public class PlayerManager : MonoBehaviour
         if (damagePercent != 0f)
         {
 
-            health -= maxHealth * (damagePercent * 0.01f);
+            float percent = damagePercent * 0.01f;
+            health -= maxHealth * percent;
 
             if (LogicScript.IsPlayerDead(health))
             {

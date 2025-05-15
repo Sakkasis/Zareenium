@@ -18,6 +18,7 @@ public class ConfigManager : MonoBehaviour
     [SerializeField] GameObject dataCommandInputObj;
     [SerializeField] GameObject promptFieldObj;
     [SerializeField] GameObject textPromptPrefab;
+    public TextMeshProUGUI confirmCommandText;
 
     TextMeshProUGUI dataTypeInput;
     TextMeshProUGUI dataCommandInput;
@@ -26,7 +27,7 @@ public class ConfigManager : MonoBehaviour
 
     [field: NonSerialized] public PlayerManager pScript;
     [field: NonSerialized] public PlayerCamScript cScript;
-    [field: NonSerialized] public List<NormEnemyBehavior> aiScripts;
+    [field: NonSerialized] public List<NormEnemyBehavior> aiScripts = new List<NormEnemyBehavior>();
 
     ConfigLogic logicScript = new ConfigLogic();
     IConfigService ConfigService = new ConfigService();
