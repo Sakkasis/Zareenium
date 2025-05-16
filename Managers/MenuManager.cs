@@ -6,19 +6,8 @@ using TMPro;
 public class MenuManager : MonoBehaviour
 {
 
-    [Header("Canvases")]
-    [SerializeField] GameObject fadeCanvas;
-    [SerializeField] GameObject mainCanvas;
-    [SerializeField] GameObject saveSlotCanvas;
-    [SerializeField] GameObject settingsCanvas;
-
     [Header("Misc")]
     [SerializeField] GameObject subTitleObject;
-
-    [field: NonSerialized]
-    public bool settingsOpenBool = false;
-    [field: NonSerialized]
-    public bool saveSelectionOpenBool = false;
 
     IDataService DataService = new JsonDataService();
     const string subTitleTextPromptsFileName = "TextPrompts";
@@ -30,47 +19,32 @@ public class MenuManager : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        
+        if (Input.GetButtonDown("Settings"))
+        {
+
+            CanvasManager canvasScript = gameObject.GetComponent<CanvasManager>();
+            canvasScript.Settings();
+
+        }
+
+    }
+
     public void SlotSelectionVoid()
     {
 
-        saveSelectionOpenBool = !saveSelectionOpenBool;
-
-        if (saveSelectionOpenBool)
-        {
-
-            mainCanvas.SetActive(false);
-            saveSlotCanvas.SetActive(true);
-
-        }
-        else
-        {
-
-            mainCanvas.SetActive(true);
-            saveSlotCanvas.SetActive(false);
-
-        }
+        CanvasManager canvasScript = gameObject.GetComponent<CanvasManager>();
+        canvasScript.MenuStart();
 
     }
 
     public void OpenSettingsVoid()
     {
 
-        settingsOpenBool = !settingsOpenBool;
-
-        if (settingsOpenBool)
-        {
-
-            mainCanvas.SetActive(false);
-            settingsCanvas.SetActive(true);
-
-        }
-        else
-        {
-
-            mainCanvas.SetActive(true);
-            settingsCanvas.SetActive(false);
-
-        }
+        CanvasManager canvasScript = gameObject.GetComponent<CanvasManager>();
+        canvasScript.Settings();
 
     }
 

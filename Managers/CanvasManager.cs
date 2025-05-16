@@ -20,29 +20,27 @@ public class CanvasManager : MonoBehaviour
         if (SceneManager.GetActiveScene().buildIndex != 0)
         {
 
-            if (!fadeCanvas.activeSelf)
+            Camera cam = Camera.main;
+            PlayerCamScript camScript = cam.GetComponent<PlayerCamScript>();
+
+            if (!fadeCanvas.activeSelf && !errorCanvas.activeSelf && !deathScreen.activeSelf)
             {
 
-                if (settingsCanvas.activeSelf)
+                if (settingsCanvas.activeSelf || inventoryCanvas.activeSelf)
                 {
 
-                    TurnOffOtherCanvases(2);
+                    camScript.disableCam = false;
                     mainCanvas.SetActive(true);
+                    TurnOffOtherCanvases(2);
                     Time.timeScale = 1f;
-
-                }
-                else if (configCanvas.activeSelf)
-                {
-
-                    TurnOffOtherCanvases(5);
-                    configCanvas.SetActive(true);
 
                 }
                 else
                 {
 
-                    TurnOffOtherCanvases(4);
+                    camScript.disableCam = true;
                     settingsCanvas.SetActive(true);
+                    TurnOffOtherCanvases(4);
                     Time.timeScale = 0f;
 
                 }
@@ -53,20 +51,18 @@ public class CanvasManager : MonoBehaviour
         else
         {
 
-            if (settingsCanvas.activeSelf)
+            if (settingsCanvas.activeSelf || saveSlotCanvas.activeSelf)
             {
 
-                TurnOffOtherCanvases(2);
                 mainCanvas.SetActive(true);
-                Time.timeScale = 1f;
+                TurnOffOtherCanvases(2);
 
             }
             else
             {
 
-                TurnOffOtherCanvases(4);
                 settingsCanvas.SetActive(true);
-                Time.timeScale = 0f;
+                TurnOffOtherCanvases(4);
 
             }
 
@@ -77,18 +73,23 @@ public class CanvasManager : MonoBehaviour
     public void Inventory()
     {
 
+        Camera cam = Camera.main;
+        PlayerCamScript camScript = cam.GetComponent<PlayerCamScript>();
+
         if (inventoryCanvas.activeSelf)
         {
 
-            TurnOffOtherCanvases(2);
+            camScript.disableCam = false;
             mainCanvas.SetActive(true);
+            TurnOffOtherCanvases(2);
 
         }
         else
         {
 
-            TurnOffOtherCanvases(3);
+            camScript.disableCam = true;
             inventoryCanvas.SetActive(true);
+            TurnOffOtherCanvases(3);
 
         }
 
@@ -100,35 +101,46 @@ public class CanvasManager : MonoBehaviour
         if (mainCanvas.activeSelf)
         {
 
-            TurnOffOtherCanvases(8);
             saveSlotCanvas.SetActive(true);
+            TurnOffOtherCanvases(8);
 
         }
         else
         {
 
-            TurnOffOtherCanvases(2);
             mainCanvas.SetActive(true);
+            TurnOffOtherCanvases(2);
 
         }
 
     }
 
-    public void Fade()
+    public void Fade(int phase)
     {
 
-        if (!fadeCanvas.activeSelf)
+        if (phase == 0)
         {
 
-            TurnOffOtherCanvases(0);
             fadeCanvas.SetActive(true);
+            TurnOffOtherCanvases(0);
+
+        }
+        else if (phase == 1)
+        {
+
+            mainCanvas.SetActive(true);
+
+        }
+        else if (phase == 2)
+        {
+
+            TurnOffOtherCanvases(2);
 
         }
         else
         {
 
-            TurnOffOtherCanvases(2);
-            mainCanvas.SetActive(true);
+            Debug.Log("Index out of range! " + phase);
 
         }
 
@@ -137,8 +149,27 @@ public class CanvasManager : MonoBehaviour
     public void Error()
     {
 
-        TurnOffOtherCanvases(9);
-        errorCanvas.SetActive(true);
+        Camera cam = Camera.main;
+        PlayerCamScript camScript = cam.GetComponent<PlayerCamScript>();
+
+        if (!errorCanvas.activeSelf)
+        {
+
+            camScript.disableCam = true;
+            errorCanvas.SetActive(true);
+            TurnOffOtherCanvases(1);
+            Time.timeScale = 0f;
+
+        }
+        else
+        {
+
+            camScript.disableCam = false;
+            mainCanvas.SetActive(true);
+            TurnOffOtherCanvases(2);
+            Time.timeScale = 1f;
+
+        }
 
     }
 
@@ -148,15 +179,15 @@ public class CanvasManager : MonoBehaviour
         if (!configCanvas.activeSelf)
         {
 
-            TurnOffOtherCanvases(5);
             configCanvas.SetActive(true);
+            TurnOffOtherCanvases(5);
 
         }
         else
         {
 
-            TurnOffOtherCanvases(4);
             settingsCanvas.SetActive(true);
+            TurnOffOtherCanvases(4);
 
         }
 
@@ -168,24 +199,35 @@ public class CanvasManager : MonoBehaviour
         if (settingsCanvas.activeSelf)
         {
 
-            TurnOffOtherCanvases(6);
             saveBeforeExitCanvas.SetActive(true);
+            TurnOffOtherCanvases(6);
 
         }
         else
         {
 
-            TurnOffOtherCanvases(4);
             settingsCanvas.SetActive(true);
+            TurnOffOtherCanvases(4);
 
         }
+
+    }
+
+    public void Death()
+    {
+
+        Camera cam = Camera.main;
+        PlayerCamScript camScript = cam.GetComponent<PlayerCamScript>();
+        camScript.disableCam = true;
+        deathScreen.SetActive(true);
+        TurnOffOtherCanvases(7);
 
     }
 
     private void TurnOffOtherCanvases(int index)
     {
 
-        if (SceneManager.GetActiveScene().buildIndex != 0)
+        if (SceneManager.GetActiveScene().buildIndex == 0)
         {
 
             if (index == 0)
@@ -417,7 +459,7 @@ public class CanvasManager : MonoBehaviour
     public bool IsCanvasActive(int index)
     {
 
-        if (SceneManager.GetActiveScene().buildIndex != 0)
+        if (SceneManager.GetActiveScene().buildIndex == 0)
         {
 
             if (index == 0)

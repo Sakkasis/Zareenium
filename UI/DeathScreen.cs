@@ -7,8 +7,6 @@ public class DeathScreen : MonoBehaviour
 {
 
     AudioManager audioManagerScript;
-
-    [SerializeField] GameObject deathScreenCanvas;
     [SerializeField] TextMeshProUGUI deathReasonText;
 
     private void Start()
@@ -31,7 +29,8 @@ public class DeathScreen : MonoBehaviour
         audioManagerScript.TurnAudioOffOn(false, false, false, true);
         Time.timeScale = 0f;
         yield return new WaitForSecondsRealtime(waitTime);
-        deathScreenCanvas.SetActive(true);
+        CanvasManager canvasScript = gameObject.GetComponent<CanvasManager>();
+        canvasScript.Death();
         yield return new WaitForEndOfFrame();
         deathReasonText.SetText("KRILL ISSUE");
 

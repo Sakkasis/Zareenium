@@ -10,10 +10,7 @@ public class ConfigManager : MonoBehaviour
 {
 
     [Header("Conifg")]
-    public bool menuOpen = false;
     [SerializeField] GameObject configMenuButton;
-    [SerializeField] GameObject configCanvas;
-    [SerializeField] GameObject settingsCanvas;
     [SerializeField] GameObject dataTypeInputObj;
     [SerializeField] GameObject dataCommandInputObj;
     [SerializeField] GameObject promptFieldObj;
@@ -45,32 +42,25 @@ public class ConfigManager : MonoBehaviour
     public void ConfigMenu()
     {
 
-        menuOpen = !menuOpen;
         SetDataPrompts();
-        configCanvas.SetActive(menuOpen);
-        settingsCanvas.SetActive(!menuOpen);
+        CanvasManager canvasScript = gameObject.GetComponent<CanvasManager>();
+        canvasScript.Config();
 
-        if (SceneManager.GetActiveScene().buildIndex == 0)
-        {
-
-            MenuManager menuScript = gameObject.GetComponent<MenuManager>();
-            menuScript.settingsOpenBool = !menuOpen;
-
-        }
-        else
+        if (SceneManager.GetActiveScene().buildIndex != 0)
         {
 
             pScript = GameObject.FindGameObjectWithTag("bean").GetComponent<PlayerManager>();
             cScript = Camera.main.GetComponent<PlayerCamScript>();
+            aiScripts.Clear();
             enemiesList.Clear();
             enemiesList.AddRange(GameObject.FindGameObjectsWithTag("Enemy"));
-            aiScripts.Clear();
+
             for (int i = 0; i < enemiesList.Count; i++)
             {
+
                 aiScripts.Add(enemiesList[i].GetComponent<NormEnemyBehavior>());
+
             }
-            UIManager uiScript = gameObject.GetComponent<UIManager>();
-            uiScript.settingsOpen = !menuOpen;
 
         }
 

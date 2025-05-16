@@ -32,8 +32,7 @@ public class PlayerManager : MonoBehaviour
     public float attackCooldown = 0.5f;
     public float attackManaCost = 10f;
 
-    [field: NonSerialized]
-    public bool playerIsDead = false;
+    [field: NonSerialized] public bool playerIsDead = false;
 
     bool hpRegen = true;
     bool manaRegen = true;
@@ -241,7 +240,8 @@ public class PlayerManager : MonoBehaviour
                     if (LogicScript.CriticalCheck())
                     {
 
-                        enemyScript.DamageReceived(damageAmount * ((critDamage + 100f) * 0.01f));
+                        float critDamMultiplier = (critDamage + 100f) * 0.01f;
+                        enemyScript.DamageReceived(damageAmount * critDamMultiplier);
 
                     }
                     else

@@ -1569,14 +1569,57 @@ public class ConfigService : IConfigService
 
             configScript.pScript.health = -1f;
             configScript.pScript.PlayerTakesDamage(0f, 120f);
-            configScript.confirmCommandText.SetText("Sucessfully executed command:\n" + command);
+            configScript.confirmCommandText.SetText("Successfully executed command:\n" + command);
+            return true;
+
+        }
+        else if (command.Contains("KillAll", StringComparison.Ordinal))
+        {
+
+            for (int i = 0; i < configScript.aiScripts.Count; i++)
+            {
+                configScript.aiScripts[i].health -= configScript.aiScripts[i].maxHealth + 10f;
+            }
+            configScript.confirmCommandText.SetText("Successfully executed command:\n" + command);
+            return true;
+
+        }
+        else if (command.Contains("Heal", StringComparison.Ordinal))
+        {
+
+            float.TryParse(input, out float result);
+            if (configScript.pScript.health + result > configScript.pScript.maxHealth)
+            {
+                configScript.pScript.health = configScript.pScript.maxHealth;
+            }
+            else
+            {
+                configScript.pScript.health += result;
+            }
+            configScript.confirmCommandText.SetText("Successfully executed command:\n" + command + "\n" + configScript.pScript.health);
+            return true;
+
+        }
+        else if (command.Contains("AddMana", StringComparison.Ordinal))
+        {
+
+            float.TryParse(input, out float result);
+            if (configScript.pScript.mana + result > configScript.pScript.maxMana)
+            {
+                configScript.pScript.mana = configScript.pScript.maxMana;
+            }
+            else
+            {
+                configScript.pScript.mana += result;
+            }
+            configScript.confirmCommandText.SetText("Successfully executed command:\n" + command + "\n" + configScript.pScript.mana);
             return true;
 
         }
         else
         {
 
-            configScript.confirmCommandText.SetText("Sucessfully executed command:\n" + command);
+            configScript.confirmCommandText.SetText("ERROR! Task failed successfully.\n" + "Please try again.");
             return false;
 
         }

@@ -27,12 +27,7 @@ public class UIManager : MonoBehaviour
         if (Input.GetButtonDown("Settings"))
         {
 
-            if (canvasScript.IsCanvasActive(6))
-            {
-
-
-
-            }
+            canvasScript.Settings();
 
         }
         
@@ -42,13 +37,6 @@ public class UIManager : MonoBehaviour
             canvasScript.Inventory();
 
         }
-
-    }
-
-    public void SaveBeforeExitVoid()
-    {
-
-
 
     }
 

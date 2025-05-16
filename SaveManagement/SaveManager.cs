@@ -21,12 +21,6 @@ public class SaveManager : MonoBehaviour
     [SerializeField] GameObject OCDTextObjectII;
     [SerializeField] List<GameObject> lastSaveTimeObjectList;
 
-    [Header("In Game Objects")]
-    [SerializeField] GameObject mainCanvas;
-    [SerializeField] GameObject inventoryCanvas;
-    [SerializeField] GameObject settingsCanvas;
-    [SerializeField] GameObject saveBeforeExitCanvas;
-
     [Header("Prefabs")]
     [SerializeField] GameObject enemyPrefab;
     [SerializeField] GameObject playerPrefab;
@@ -53,7 +47,6 @@ public class SaveManager : MonoBehaviour
     const string slotIVFileName = "_slot-IV";
     const string slotVFileName = "_slot-V";
 
-    const string logFilename = "ErrorLog";
     const string saveManagerDataFileName = "SaveManagerData";
     const string slotDataFileName = "SlotData";
     const string playerDataFileName = "PlayerData";
@@ -68,8 +61,8 @@ public class SaveManager : MonoBehaviour
         audioManagerObject = GameObject.FindGameObjectWithTag("AudioManager");
         audioManagerScript = audioManagerObject.GetComponent<AudioManager>();
 
-        InitializeDataFiles();
         ErrorService.LogError(null);
+        InitializeDataFiles();
 
     }
 
@@ -79,108 +72,24 @@ public class SaveManager : MonoBehaviour
         SaveManagerData saveManagerData = DataClasses.SaveManagerDataClass();
         SettingsData settingsData = DataClasses.SettingsDataClass();
 
-        if (DataService.LoadData<ConfigData>(configFileName, true).ConfigManager == false)
+        if (SceneManager.GetActiveScene().buildIndex == 0)
         {
 
-            if (SceneManager.GetActiveScene().buildIndex == 0)
+            gameManager = GameObject.FindGameObjectWithTag("MenuManager");
+            settingsManagerScript = gameManager.GetComponent<SettingsManager>();
+            faderScript = gameManager.GetComponent<Fader>();
+            faderScript.FadeVoid(255f, 0f, 5f, null);
+
+            if (saveManagerData.playersFirstSession == true)
             {
 
-                gameManager = GameObject.FindGameObjectWithTag("MenuManager");
-                settingsManagerScript = gameManager.GetComponent<SettingsManager>();
-                faderScript = gameManager.GetComponent<Fader>();
-                faderScript.FadeVoid(255f, 0f, 5f, null);
-
-                if (saveManagerData.playersFirstSession == true)
-                {
-
-                    saveManagerData.playersFirstSession = false;
-                    settingsData.openSettingsTab = 2;
-                    settingsManagerScript.ChangeCategory(2);
-
-                }
-                else
-                {
-
-                    if (settingsData.openSettingsTab == 1)
-                    {
-
-                        settingsData.openSettingsTab = 2;
-                        settingsManagerScript.ChangeCategory(2);
-
-                    }
-                    else
-                    {
-
-                        settingsManagerScript.ChangeCategory(settingsData.openSettingsTab);
-
-                    }
-
-                }
-
-                if (saveManagerData.quitWithoutSavingLastTime == true)
-                {
-
-                    saveManagerData.quitWithoutSavingLastTime = false;
-                    StartCoroutine(LastSessionEndedWithoutSavingIE());
-
-                }
-
-                SetLastSaveTimeVoid();
+                saveManagerData.playersFirstSession = false;
+                settingsData.openSettingsTab = 2;
+                settingsManagerScript.ChangeCategory(2);
 
             }
-            else if (SceneManager.GetActiveScene().buildIndex != 0)
+            else
             {
-
-                gameManager = GameObject.FindGameObjectWithTag("UIManager");
-                faderScript = gameManager.GetComponent<Fader>();
-                saveLoadConfirmerScript = gameObject.GetComponent<SaveLoadConfirmer>();
-                settingsManagerScript = gameManager.GetComponent<SettingsManager>();
-
-                faderScript.FadeVoid(255f, 0f, 5f, null);
-                settingsManagerScript.ChangeCategory(settingsData.openSettingsTab);
-
-                if (saveManagerData.loadDataOnSceneLoad == true)
-                {
-
-                    LoadSaveOnSceneLoadVoid();
-                    saveManagerData.loadDataOnSceneLoad = false;
-
-                }
-
-                if (settingsData.openSettingsTab == 2)
-                {
-
-                    settingsData.openSettingsTab = 1;
-                    settingsManagerScript.ChangeCategory(1);
-
-                }
-                else
-                {
-
-                    settingsManagerScript.ChangeCategory(settingsData.openSettingsTab);
-
-                }
-
-            }
-
-        }
-        else
-        {
-
-            saveManagerData.currentlySelectedSaveSlot = 1;
-            saveManagerData.loadDataOnSceneLoad = false;
-            saveManagerData.quitWithoutSavingLastTime = false;
-            saveManagerData.savedRecently = true;
-
-            DataService.SaveData(saveManagerDataFileName, saveManagerData, true);
-
-            if (SceneManager.GetActiveScene().buildIndex == 0)
-            {
-
-                gameManager = GameObject.FindGameObjectWithTag("MenuManager");
-                settingsManagerScript = gameManager.GetComponent<SettingsManager>();
-                faderScript = gameManager.GetComponent<Fader>();
-                faderScript.FadeVoid(255f, 0f, 5f, null);
 
                 if (settingsData.openSettingsTab == 1)
                 {
@@ -197,44 +106,48 @@ public class SaveManager : MonoBehaviour
                 }
 
             }
+
+            if (saveManagerData.quitWithoutSavingLastTime == true)
+            {
+
+                saveManagerData.quitWithoutSavingLastTime = false;
+                StartCoroutine(LastSessionEndedWithoutSavingIE());
+
+            }
+
+            SetLastSaveTimeVoid();
+
+        }
+        else
+        {
+
+            gameManager = GameObject.FindGameObjectWithTag("UIManager");
+            faderScript = gameManager.GetComponent<Fader>();
+            saveLoadConfirmerScript = gameObject.GetComponent<SaveLoadConfirmer>();
+            settingsManagerScript = gameManager.GetComponent<SettingsManager>();
+
+            faderScript.FadeVoid(255f, 0f, 5f, null);
+            settingsManagerScript.ChangeCategory(settingsData.openSettingsTab);
+
+            if (saveManagerData.loadDataOnSceneLoad == true)
+            {
+
+                LoadSaveOnSceneLoadVoid();
+                saveManagerData.loadDataOnSceneLoad = false;
+
+            }
+
+            if (settingsData.openSettingsTab == 2)
+            {
+
+                settingsData.openSettingsTab = 1;
+                settingsManagerScript.ChangeCategory(1);
+
+            }
             else
             {
 
-                gameManager = GameObject.FindGameObjectWithTag("UIManager");
-                faderScript = gameManager.GetComponent<Fader>();
-                saveLoadConfirmerScript = gameObject.GetComponent<SaveLoadConfirmer>();
-                settingsManagerScript = gameManager.GetComponent<SettingsManager>();
-
-                faderScript.FadeVoid(255f, 0f, 5f, null);
                 settingsManagerScript.ChangeCategory(settingsData.openSettingsTab);
-
-                if (settingsData.openSettingsTab == 2)
-                {
-
-                    settingsData.openSettingsTab = 1;
-                    settingsManagerScript.ChangeCategory(1);
-
-                }
-                else
-                {
-
-                    settingsManagerScript.ChangeCategory(settingsData.openSettingsTab);
-
-                }
-
-                if (saveManagerData.loadDataOnSceneLoad == true)
-                {
-
-                    LoadSaveOnSceneLoadVoid();
-                    saveManagerData.loadDataOnSceneLoad = false;
-
-                }
-                else
-                {
-
-                    SaveGameVoid();
-
-                }
 
             }
 
@@ -254,9 +167,9 @@ public class SaveManager : MonoBehaviour
             if (SceneManager.GetActiveScene().buildIndex != 0)
             {
 
-                UIManager uiManagerScript = gameManager.GetComponent<UIManager>();
+                CanvasManager canvasScript = gameManager.GetComponent<CanvasManager>();
 
-                if (uiManagerScript.settingsOpen)
+                if (canvasScript.IsCanvasActive(4))
                 {
 
                     loadSavedGameStateClass.LoadSettingsDataBool();
@@ -273,9 +186,9 @@ public class SaveManager : MonoBehaviour
             else
             {
 
-                MenuManager menuManagerScript = gameManager.GetComponent<MenuManager>();
+                CanvasManager canvasScript = gameManager.GetComponent<CanvasManager>();
 
-                if (menuManagerScript.settingsOpenBool)
+                if (canvasScript.IsCanvasActive(4))
                 {
 
                     loadSavedGameStateClass.LoadSettingsDataBool();
@@ -307,8 +220,8 @@ public class SaveManager : MonoBehaviour
 
                 saveManagerData.currentlySelectedSaveSlot = 0;
                 saveManagerData.quitWithoutSavingLastTime = true;
-
                 saveGameStateClass.SaveManagerDataBool(saveManagerData);
+                AutoSave();
 
             }
 
@@ -330,17 +243,6 @@ public class SaveManager : MonoBehaviour
 
         try
         {
-
-            if (DataService.DoesFileExist(logFilename) == false)
-            {
-
-                ErrorLog errorLogClass = new ErrorLog();
-                errorLogClass.ErrorMessages.Clear();
-                errorLogClass.ErrorMessages.AddRange(new string[1]);
-                errorLogClass.ErrorMessages[0] = "This is the error log file! Please do not tamper with it, as it logs any and all errors and the relevant info about them into this file, if you experience an error in the game please send this file to the developer, thank you for your cooperation!";
-                DataService.SaveData("ErrorLog", errorLogClass, false);
-
-            }
 
             if (DataService.DoesFileExist(saveManagerDataFileName) == false)
             {
@@ -414,7 +316,7 @@ public class SaveManager : MonoBehaviour
                 subTitleTextPromptsClass.textPrompts.AddRange(new string[7]);
                 subTitleTextPromptsClass.textPrompts[0] = "Beandom, Kingdom\nhehe get it?";
                 subTitleTextPromptsClass.textPrompts[1] = "THE POWER OF GOLK COMPELS YOU!";
-                subTitleTextPromptsClass.textPrompts[2] = "Spill oil brothers!\n-SES Harbinger of Judgment";
+                subTitleTextPromptsClass.textPrompts[2] = "Spill oil, stomp bugs and smash squids brothers!\n-SES Harbinger of Judgment";
                 subTitleTextPromptsClass.textPrompts[3] = "The beans looking kinda sus";
                 subTitleTextPromptsClass.textPrompts[4] = "Did you ever hear the tragedy of Darth Plagueis the Wise?";
                 subTitleTextPromptsClass.textPrompts[5] = "Yo mama so fat\n<color=red>!ERROR! index out of range</color>";
@@ -685,7 +587,7 @@ public class SaveManager : MonoBehaviour
         GameObject bean = GameObject.FindGameObjectWithTag("bean");
         PlayerManager playerScript = bean.GetComponent<PlayerManager>();
 
-        faderScript.FadeSetImageAlpha(0f, 255f, false);
+        faderScript.FadeSetImageAlpha(0f, 255f);
 
         if (SceneManager.GetActiveScene().buildIndex != 0 && playerScript.playerIsDead == false)
         {
@@ -724,7 +626,9 @@ public class SaveManager : MonoBehaviour
             else
             {
 
-                if (quitGame == true && saveBeforeExitCanvas.activeSelf == true)
+                CanvasManager canvasScript = gameManager.GetComponent<CanvasManager>();
+
+                if (quitGame == true && canvasScript.IsCanvasActive(6))
                 {
 
                     if (saveGameStateClass.SaveSlotDataBool(saveManagerData.currentlySelectedSaveSlot - 1) == true && saveGameStateClass.SaveSettingsDataBool() == true && audioManagerScript.SaveAudioSettings() == true)
@@ -757,7 +661,7 @@ public class SaveManager : MonoBehaviour
                     }
 
                 }
-                else if (saveBeforeExitCanvas.activeSelf == true)
+                else if (canvasScript.IsCanvasActive(6))
                 {
 
                     if (saveGameStateClass.SaveSlotDataBool(saveManagerData.currentlySelectedSaveSlot - 1) == true && saveGameStateClass.SaveSettingsDataBool() == true && audioManagerScript.SaveAudioSettings() == true)
@@ -789,8 +693,7 @@ public class SaveManager : MonoBehaviour
                 else
                 {
 
-                    saveBeforeExitCanvas.SetActive(true);
-                    settingsCanvas.SetActive(false);
+                    canvasScript.SaveBeforeExit();
 
                 }
 
@@ -848,7 +751,7 @@ public class SaveManager : MonoBehaviour
     public void AutoSave()
     {
 
-        SaveGameStateBool();
+        SaveGameVoid();
 
     }
 

@@ -5,53 +5,17 @@ using UnityEngine;
 public class InventoryManager : MonoBehaviour
 {
 
-    [SerializeField] GameObject inventoryCanvas;
     [SerializeField] List<GameObject> weaponsUIElementsList;
     [SerializeField] List<GameObject> spellBookUIElementsList;
     [SerializeField] List<GameObject> materialsUIElementsList;
     [SerializeField] List<GameObject> questLogUIElementsList;
 
-    [field: NonSerialized]
-    public int openCategory;
-
-    private bool inventoryOpen = false;
+    [field: NonSerialized] public int openCategory;
 
     void Start()
     {
 
         ChangeCategory(1);
-
-    }
-
-    private void Update()
-    {
-        
-        if (Input.GetButtonDown("Inventory"))
-        {
-
-            OpenCloseInventory();
-
-        }
-
-    }
-
-    private void OpenCloseInventory()
-    {
-
-        inventoryOpen = !inventoryOpen;
-
-        if (inventoryOpen == true)
-        {
-
-            inventoryCanvas.SetActive(true);
-
-        }
-        else
-        {
-
-            inventoryCanvas.SetActive(false);
-
-        }
 
     }
 

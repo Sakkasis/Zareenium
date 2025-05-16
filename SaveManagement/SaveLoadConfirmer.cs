@@ -30,7 +30,7 @@ public class SaveLoadConfirmer : MonoBehaviour
         else
         {
 
-            waitTime = 8f;
+            waitTime = 5f;
 
         }
         if (startTime.HasValue)
@@ -66,7 +66,7 @@ public class SaveLoadConfirmer : MonoBehaviour
         if (startTime.HasValue)
         {
 
-            StartCoroutine(ConfirmToPlayerIE(startTime, true));
+            StartCoroutine(ConfirmToPlayerIE(startTime, false));
 
         }
         else
@@ -166,12 +166,19 @@ public class SaveLoadConfirmer : MonoBehaviour
 
                 }
 
+                foreach (GameObject obj in confirmerObjects)
+                {
+
+                    obj.SetActive(true);
+
+                }
+
                 yield return new WaitForSecondsRealtime(waitTime);
 
                 foreach (GameObject obj in confirmerObjects)
                 {
 
-                    obj.SetActive(true);
+                    obj.SetActive(false);
 
                 }
 
@@ -242,12 +249,19 @@ public class SaveLoadConfirmer : MonoBehaviour
 
             }
 
+            foreach (GameObject obj in confirmerObjects)
+            {
+
+                obj.SetActive(true);
+
+            }
+
             yield return new WaitForSecondsRealtime(waitTime);
 
             foreach (GameObject obj in confirmerObjects)
             {
 
-                obj.SetActive(true);
+                obj.SetActive(false);
 
             }
 

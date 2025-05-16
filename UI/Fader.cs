@@ -10,7 +10,6 @@ public class Fader : MonoBehaviour
 {
 
     [SerializeField] Image fadeImage;
-    [SerializeField] GameObject fadeCanvas;
     Tweener fadeTween;
 
     float alphaFrom;
@@ -28,7 +27,7 @@ public class Fader : MonoBehaviour
     }
 
 #nullable enable
-    public void FadeSetImageAlpha(float? alphaFromLocal, float? alphaToLocal, bool setCanvasActive)
+    public void FadeSetImageAlpha(float? alphaFromLocal, float? alphaToLocal)
     {
 
         if (alphaFromLocal.HasValue)
@@ -44,12 +43,6 @@ public class Fader : MonoBehaviour
             alphaTo = alphaToLocal.Value;
 
         }
-        if (setCanvasActive == true)
-        {
-
-            fadeCanvas.SetActive(true);
-
-        }
 
     }
 
@@ -58,7 +51,7 @@ public class Fader : MonoBehaviour
     {
 
         DOTween.Kill(fadeTween);
-        FadeSetImageAlpha(alphaFromLocal, alphaToLocal, true);
+        FadeSetImageAlpha(alphaFromLocal, alphaToLocal);
 
         StartCoroutine(FadeIE(waitTime, scene));
 
@@ -66,6 +59,9 @@ public class Fader : MonoBehaviour
 
     IEnumerator FadeIE(float waitTime, int? scene)
     {
+
+        CanvasManager canvasScript = gameObject.GetComponent<CanvasManager>();
+        canvasScript.Fade(0);
 
         yield return new WaitForEndOfFrame();
 
@@ -76,21 +72,12 @@ public class Fader : MonoBehaviour
         fadeTween.Play();
 
         yield return new WaitForEndOfFrame();
+        canvasScript.Fade(1);
         Time.timeScale = 0f;
         yield return new WaitForSecondsRealtime(waitTime);
 
         if (scene.HasValue)
         {
-
-            List<GameObject> canvasObjectList = new List<GameObject>();
-            canvasObjectList.AddRange(GameObject.FindGameObjectsWithTag("Canvas"));
-
-            foreach (GameObject canvasObject in canvasObjectList)
-            {
-
-                canvasObject.SetActive(false);
-
-            }
 
             DOTween.KillAll();
             SceneManager.LoadScene(scene.Value);
@@ -99,29 +86,12 @@ public class Fader : MonoBehaviour
         else
         {
 
-            fadeCanvas.SetActive(false);
+            canvasScript.Fade(2);
             Time.timeScale = 1f;
 
         }
 
     }
 #nullable disable
-    public void SetFadeCanvasActive(bool trueOnFalseOff)
-    {
-
-        if (trueOnFalseOff == true)
-        {
-
-            fadeCanvas.SetActive(true);
-
-        }
-        else if (trueOnFalseOff == false)
-        {
-
-            fadeCanvas.SetActive(false);
-
-        }
-
-    }
 
 }

@@ -46,13 +46,7 @@ public class NormEnemyBehavior : MonoBehaviour
     {
 
         cubean = gameObject.GetComponent<NavMeshAgent>();
-
-        if (patrolPointObjectsList.Count == 0)
-        {
-
-            patrolPointObjectsList = internalLogic.FindPatrolRoute(patrolRouteInt);
-
-        }
+        patrolPointObjectsList = internalLogic.FindPatrolRoute(patrolRouteInt);
 
         PatrolSetNextDestinationVoid();
         StartCoroutine(PatrolReachedDestinationIE(false));
