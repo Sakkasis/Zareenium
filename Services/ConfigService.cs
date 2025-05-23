@@ -1616,6 +1616,31 @@ public class ConfigService : IConfigService
             return true;
 
         }
+        else if (command.Contains("Spawn", StringComparison.Ordinal))
+        {
+
+            if (command.Contains("Enemy", StringComparison.Ordinal))
+            {
+
+
+                return true;
+
+            }
+            else if (command.Contains("Milk", StringComparison.Ordinal))
+            {
+
+                return true;
+
+            }
+            else
+            {
+
+                configScript.confirmCommandText.SetText("ERROR! Task failed successfully.\n" + "Please try again.");
+                return false;
+
+            }
+
+        }
         else
         {
 
